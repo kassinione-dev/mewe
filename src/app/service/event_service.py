@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from ..exceptions import ConflictError, ForbiddenError, NotFoundError, ValidationError
@@ -28,7 +28,7 @@ def create_event(user_id: int, payload: dict[str, Any]) -> Event:
     if user is None:
         raise NotFoundError("user not found")
 
-    now = datetime.utcnow()  # noqa: DTZ003
+    now = datetime.now(UTC)
 
     if user.last_event_create_at:
         elapsed = now - user.last_event_create_at
@@ -91,7 +91,7 @@ def join_event(user_id: int, event_id: int) -> tuple[Participant, int, bool]:
         raise ConflictError("creator cannot join their own event")
 
     event_end = event.event_date
-    if event_end <= datetime.utcnow():  # noqa: DTZ003
+    if event_end <= datetime.now(UTC):
         raise ConflictError("event has already started")
 
     participant = get_participant(user_id, event_id)
@@ -147,7 +147,7 @@ def delete_event(user_id: int, event_id: int) -> None:
     if event.creator_id != user_id:
         raise ForbiddenError("only the creator can delete the event")
 
-    if event.event_date <= datetime.utcnow():  # noqa: DTZ003
+    if event.event_date <= datetime.now(UTC):
         raise ConflictError("event has already started or finished")
 
     db.session.delete(event)

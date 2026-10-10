@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any, TypedDict
 
 from ..exceptions import ValidationError
@@ -81,7 +81,12 @@ def validate_create_event_payload(payload: dict[str, Any]) -> CreateEventData:
     except ValueError as error:
         raise ValidationError("invalid event_date format") from error
 
-    if event_date <= datetime.utcnow():  # noqa: DTZ003
+    if event_date.tzinfo is None:
+        raise ValidationError("event_date must include timezone")
+
+    event_date = event_date.astimezone(UTC)
+
+    if event_date <= datetime.now(UTC):
         raise ValidationError("invalid event_date value")
 
     duration_minutes = payload.get("duration_minutes")

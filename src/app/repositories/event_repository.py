@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import exists, or_, select
 from sqlalchemy.orm import joinedload
@@ -52,7 +52,7 @@ def get_events_by_participant(user_id: int) -> list[Event]:
 
 
 def find_public_events(search: str, category_ids: list[int] | None, page: int, per_page: int) -> tuple[list[Event], int]:
-    query = Event.query.filter(Event.event_date >= datetime.utcnow())  # noqa: DTZ003
+    query = Event.query.filter(Event.event_date >= datetime.now(UTC))
 
     if search:
         query = query.filter(

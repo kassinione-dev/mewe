@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from functools import wraps
 from typing import Any
 
@@ -61,7 +61,7 @@ def auth_or_create_user(payload: dict[str, Any]) -> User:
     if "photo_url" in user_data:
         user.photo_url = user_data["photo_url"]
 
-    user.last_login_at = datetime.utcnow()  # noqa: DTZ003
+    user.last_login_at = datetime.now(UTC)
     db.session.commit()
 
     session["user_id"] = user.id
