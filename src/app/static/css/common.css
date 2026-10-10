@@ -15,7 +15,9 @@
   --text-on-accent: #FFFFFF;
 
   --border: #E5E5EA;
+  /* --accent — текст, иконки, обводки; --accent-fill — заливка под белым текстом */
   --accent:  var(--fefu-blue);
+  --accent-fill: var(--fefu-blue);
   --success: var(--boostrap-success);
   --danger:  var(--fefu-red);
 
@@ -34,6 +36,9 @@
   --text-on-accent: #FFFFFF;
 
   --border: #3A3A3C;
+
+  /* фирменный синий на тёмном фоне не читается, для текста и иконок осветляем */
+  --accent: #8AADEB;
 }
 
 #logo-png {
@@ -82,7 +87,7 @@ html, body {
   font-family: var(--font-main);
   cursor: pointer;
   color: var(--text-on-accent);
-  background: var(--accent);
+  background: var(--accent-fill);
 }
 
 .toast {
@@ -117,7 +122,7 @@ html, body {
 }
 
 .toast.info {
-  background-color: var(--accent);
+  background-color: var(--accent-fill);
 }
 
 .header-plate {
@@ -285,7 +290,7 @@ html, body {
 
 .categories-tab:hover,
 .categories-tab.active {
-  background-color: var(--accent);
+  background-color: var(--accent-fill);
   color: var(--text-on-accent);
 }
 

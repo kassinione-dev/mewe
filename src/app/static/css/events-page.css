@@ -60,7 +60,7 @@
     min-width: 20px;
     padding: 0 6px;
     border-radius: 10px;
-    background: var(--accent);
+    background: var(--accent-fill);
     color: var(--text-on-accent);
     font-size: 12px;
     line-height: 20px;
@@ -75,7 +75,7 @@
 .categories-tab:hover .categories-count,
 .categories-tab.active .categories-count {
     background: var(--text-on-accent);
-    color: var(--accent);
+    color: var(--accent-fill);
 }
 
 /* ---------- Результаты ---------- */
