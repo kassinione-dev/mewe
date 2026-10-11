@@ -120,11 +120,7 @@ def leave_event(user_id: int, event_id: int) -> tuple[int, bool]:
     if event is None:
         raise NotFoundError("event not found")
 
-    participant = (
-        db.session.query(Participant)
-        .filter_by(user_id=user_id, event_id=event_id)
-        .first()
-    )
+    participant = get_participant(user_id, event_id)
 
     if participant is None:
         return get_registered_count(event_id), False
