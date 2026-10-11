@@ -3,8 +3,7 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div id="events-page" data-events-url="{{ url_for('events.get_events') }}"
-     data-create-url="{{ url_for('my_events.render_my_event_page') }}">
+<div id="events-page" data-create-url="{{ url_for('my_events.render_my_event_page') }}">
 <div class="events-toolbar">
 <div class="search-bar-container">
     <div class="search-icon-left">
@@ -42,10 +41,10 @@
 </div>
 
 <!-- -- -- Модальное окно категорий -->
-<div class="categories-modal" id="categoriesModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-overlay" id="modalOverlay" tabindex="-1"></div>
+<div class="modal categories-modal" id="categoriesModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-overlay" data-modal-close></div>
     <div class="modal-content">
-        <button class="modal-close" id="modalClose" type="button" aria-label="Закрыть">
+        <button class="modal-close" type="button" aria-label="Закрыть" data-modal-close>
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                 <path d="M6 6L18 18M18 6L6 18"></path>
             </svg>
@@ -53,7 +52,7 @@
         <h2 id="modalTitle">Категории</h2>
         <div class="events-container categories-container">
             {% for category in categories %}
-            <div class="event-card" tabindex="0" data-category-id="{{ category.id }}" data-category-name="{{ category.name }}">
+            <div class="event-card" tabindex="0" role="button" aria-pressed="false" data-category-id="{{ category.id }}" data-category-name="{{ category.name }}">
                 <div class="event-header">
                     <span class="event-category">
                         {% if category.icon %}
@@ -70,31 +69,20 @@
             {% endfor %}
         </div>
         <div class="categories-footer">
-            <button class="btn categories-reset" id="categoriesReset" type="button" disabled>Сбросить</button>
-            <button class="btn categories-done" id="categoriesDone" type="button">Готово</button>
+            <button class="btn categories-reset" type="button" disabled data-categories-reset>Сбросить</button>
+            <button class="btn categories-done" type="button" data-modal-close>Готово</button>
         </div>
     </div>
 </div>
 
-<!-- Модальное окно детального просмотра мероприятия -->
-<div class="categories-modal" id="eventDetailModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="eventDetailTitle">
-    <div class="modal-overlay" id="eventDetailOverlay" tabindex="-1"></div>
-    <div class="modal-content">
-        <button class="modal-close" id="eventDetailClose" type="button" aria-label="Закрыть">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M6 6L18 18M18 6L6 18"></path>
-            </svg>
-        </button>
-        <div id="eventDetailBody"></div>
-    </div>
-</div>
+{% include "partials/event_detail_modal.html" %}
 </div>
 {% endblock %}
 
-{% block extra_head %}
-<link href="{{ url_for('static', filename='css/events-page.css') }}" rel="stylesheet">
+{% block styles %}
+<link href="{{ url_for('static', filename='css/pages/events.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block scripts %}
-<script type="module" src="{{ url_for('static', filename='js/events-page.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/pages/events.js') }}"></script>
 {% endblock %}

@@ -1,5 +1,4 @@
-/* Страница «Мои мероприятия»: форма создания, секции, вкладки, пустые состояния, кнопка создания.
-   Единый файл (раньше было два: my-events.css + my-events-page.css). */
+/* Страница «Мои мероприятия»: вкладки, секции, прошедшие, форма создания, кнопка «Создать». */
 
 .create-hero {
     height: 0;
@@ -15,27 +14,6 @@
     position: relative;
     z-index: 2;
     margin: 0 auto 16px;
-}
-
-.my-events-section-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: calc(100% - 40px);
-    max-width: 800px;
-    margin: 0 auto 14px;
-    padding: 12px 16px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    color: var(--text-primary);
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.my-events-section-title i {
-    color: var(--accent);
-    font-size: 15px;
 }
 
 .my-events-section .events-container {
@@ -73,50 +51,18 @@
     padding: 0;
 }
 
-.form-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 1500;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Форма создания открывается в общем окне (components/modal.css) */
+.create-event-modal {
     padding: 16px;
-    overflow-y: auto;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
 }
 
-.form-overlay.form-open {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(20px);
-    }
+/* Пока форма открыта, плавающая кнопка «Создать» не нужна */
+.my-events-page.is-creating .create-hero {
+    display: none;
 }
 
 .create-form {
-    display: none;
+    display: flex;
     position: relative;
     z-index: 1600;
     flex-direction: column;
@@ -130,18 +76,10 @@
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 16px;
-    animation: fadeIn 0.3s ease-out;
-    box-sizing: border-box;
 }
 
-.create-form.form-closing {
-    animation: fadeOut 0.3s ease-in forwards;
-}
-
-.create-form *,
-.create-form *::before,
-.create-form *::after {
-    box-sizing: border-box;
+.create-event-modal.is-open .create-form {
+    animation: modalFadeIn 0.3s ease-out;
 }
 
 .create-form h1 {
@@ -264,11 +202,7 @@
     -webkit-appearance: none;   /* Chrome/Safari/Edge: убирает спиннеры */
     margin: 0;
 }
-.create-form .input-with-icon input[type="number"]::-webkit-outer-spin-button,
-.create-form .input-with-icon input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
+
 
 .s-btn {
     align-self: stretch;
@@ -351,28 +285,10 @@
     }
 }
 
-@media (max-width: 768px) {
-    .my-events-section-title {
-        width: calc(100% - 32px);
-    }
-}
-
 /* ======================= Страница ======================= */
 
 .my-events-page {
     padding-bottom: 88px; /* место под кнопку «Создать», чтобы она не перекрывала последнюю карточку */
-}
-
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
 }
 
 /* ---------- Вкладки ---------- */
@@ -453,60 +369,6 @@
     display: none;
 }
 
-/* ---------- Карточки на этой странице ---------- */
-
-/* В «Я организую» организатор — сам пользователь, строка с ником только повторяется */
-#createdEventsContainer .event-organizer {
-    display: none;
-}
-
-/* ---------- Пустые состояния ---------- */
-
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 32px 20px;
-    text-align: center;
-}
-
-.empty-state-icon {
-    width: 56px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 4px;
-    border-radius: 50%;
-    background: var(--bg-accent-soft);
-    color: var(--accent);
-    font-size: 22px;
-}
-
-.empty-state-title {
-    color: var(--text-primary);
-    font-size: 17px;
-    font-weight: 700;
-    line-height: 1.3;
-}
-
-.empty-state-text {
-    max-width: 320px;
-    color: var(--text-secondary);
-    font-size: 15px;
-    font-weight: 400;
-    line-height: 1.5;
-}
-
-.empty-state .empty-state-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 12px;
-    height: 44px;
-    text-decoration: none;
-}
 
 /* ---------- Прошедшие мероприятия ---------- */
 

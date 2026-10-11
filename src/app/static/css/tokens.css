@@ -1,0 +1,44 @@
+/* Палитра и шрифты. Тёмная тема — переопределение тех же переменных. */
+
+:root {
+  --fefu-blue: #3B63AB;
+  --fefu-red: #BC2940;
+
+  --boostrap-success: #28a745;
+
+  --bg-page: #F7F9FC;
+  --bg-card: #FFFFFF;
+  --bg-card-header: #FFFFFF;
+  --bg-accent-soft: #E7ECF6;
+
+  --text-primary: #1C1C1E;
+  --text-secondary: #636366;
+  --text-muted: #8E8E93;
+  --text-on-accent: #FFFFFF;
+
+  --border: #E5E5EA;
+  /* --accent — текст, иконки, обводки; --accent-fill — заливка под белым текстом */
+  --accent:  var(--fefu-blue);
+  --accent-fill: var(--fefu-blue);
+  --success: var(--boostrap-success);
+  --danger:  var(--fefu-red);
+
+  --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+[data-theme="dark"] {
+  --bg-page: #1C1C1E;
+  --bg-card: #2C2C2E;
+  --bg-card-header: #3A3A3C;
+  --bg-accent-soft: #26314D;
+
+  --text-primary: #F2F2F7;
+  --text-secondary: #AEAEB2;
+  --text-muted: #8E8E93;
+  --text-on-accent: #FFFFFF;
+
+  --border: #3A3A3C;
+
+  /* фирменный синий на тёмном фоне не читается, для текста и иконок осветляем */
+  --accent: #8AADEB;
+}

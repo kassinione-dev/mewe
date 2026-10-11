@@ -4,8 +4,6 @@
 
 {% block content %}
 <div id="my-events-page" class="my-events-page"
-     data-events-url="{{ url_for('users.get_my_events') }}"
-     data-participations-url="{{ url_for('users.get_my_participating_events') }}"
      data-search-url="{{ url_for('index.render_events_page') }}">
 <div class="my-events-tabs-bar">
     <div class="my-events-tabs" role="tablist" aria-label="Мои мероприятия">
@@ -22,11 +20,11 @@
     </div>
 </div>
 <section class="my-events-section" id="participationsSection" role="tabpanel" aria-labelledby="participationsTitle">
-    <h2 id="participationsTitle" class="my-events-section-title visually-hidden">Я участвую</h2>
+    <h2 id="participationsTitle" class="visually-hidden">Я участвую</h2>
     <div id="participationsContainer" class="events-container"></div>
 </section>
 <section class="my-events-section" id="createdSection" role="tabpanel" aria-labelledby="createdEventsTitle" hidden>
-    <h2 id="createdEventsTitle" class="my-events-section-title visually-hidden">Я организую</h2>
+    <h2 id="createdEventsTitle" class="visually-hidden">Я организую</h2>
     <div id="createdEventsContainer" class="events-container"></div>
 </section>
 <div class="create-hero">
@@ -37,16 +35,17 @@
         <span class="new-event-label">Создать</span>
     </button>
 </div>
-<div class="form-overlay" id="form-overlay" aria-hidden="true">
-<form class="create-form" id="event-form" method="POST" action="{{ url_for('events.create_event') }}"
+<div class="modal create-event-modal" id="createEventModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="createEventTitle">
+<div class="modal-overlay" data-modal-close></div>
+<form class="create-form" id="event-form"
       data-min-duration="{{ min_event_duration_minutes }}"
       data-max-duration="{{ max_event_duration_minutes }}">
-    <button class="close-btn" id="close-form" type="button" aria-label="Закрыть">
+    <button class="close-btn" type="button" aria-label="Закрыть" data-modal-close>
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M6 6L18 18M18 6L6 18"></path>
         </svg>
     </button>
-    <h1>Создание мероприятия</h1>
+    <h1 id="createEventTitle">Создание мероприятия</h1>
 
     <label>Категория
         <select name="category">
@@ -88,7 +87,7 @@
             <span class="duration-unit">мин</span>
         </span>
     </label>
-    <div class="required-note" id="duration-note">от {{ '%02d:%02d' % (min_event_duration_minutes // 60, min_event_duration_minutes % 60) }} до {{ '%02d:%02d' % (max_event_duration_minutes // 60, max_event_duration_minutes % 60) }}</div>
+    <div class="required-note" data-duration-range>от {{ '%02d:%02d' % (min_event_duration_minutes // 60, min_event_duration_minutes % 60) }} до {{ '%02d:%02d' % (max_event_duration_minutes // 60, max_event_duration_minutes % 60) }}</div>
 
     <label>
         <span class="label-row">Описание <span class="char-counter" data-counter-for="description"></span></span>
@@ -100,25 +99,13 @@
 </form>
 </div>
 
-<div class="categories-modal" id="eventDetailModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="eventDetailTitle">
-    <div class="modal-overlay" id="eventDetailOverlay" tabindex="-1"></div>
-    <div class="modal-content">
-        <button class="modal-close" id="eventDetailClose" type="button" aria-label="Закрыть">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M6 6L18 18M18 6L6 18"></path>
-            </svg>
-        </button>
-        <div id="eventDetailBody"></div>
-    </div>
-</div>
+{% include "partials/event_detail_modal.html" %}
 {% endblock %}
 
-{% block extra_head %}
-<link href="{{ url_for('static', filename='css/my-events.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/my-events-page.css') }}" rel="stylesheet">
+{% block styles %}
+<link href="{{ url_for('static', filename='css/pages/my-events.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block scripts %}
-<script type="module" src="{{ url_for('static', filename='js/my-events-page.js') }}"></script>
-<script type="module" src="{{ url_for('static', filename='js/event-form.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/pages/my-events.js') }}"></script>
 {% endblock %}

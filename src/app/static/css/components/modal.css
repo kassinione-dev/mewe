@@ -1,0 +1,98 @@
+/* Модальное окно: затемнение, карточка окна, кнопка закрытия.
+   Открытое окно получает класс .is-open (components/modal.js). */
+
+.modal {
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  overflow-y: auto;
+  transition: opacity 0.3s ease;
+}
+
+.modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal.is-open .modal-content {
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  max-width: 900px;
+  width: 100%;
+  padding: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.modal-close svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.modal-close:hover {
+  color: var(--danger);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .modal {
+    padding: 20px 10px;
+  }
+}

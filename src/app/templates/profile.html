@@ -3,7 +3,7 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div id="profile-page" class="profile-page" data-about-url="{{ url_for('users.update_about') }}">
+<div id="profile-page" class="profile-page">
     <div class="profile-card">
         <div class="event-header">
             <div class="event-category">
@@ -70,7 +70,7 @@
             {% if is_own %}
             <form class="profile-about-form" id="about-form" hidden>
                 <textarea name="about" maxlength="{{ profile_about_max_length }}" placeholder="Расскажите о себе" aria-label="О себе">{{ user.about or '' }}</textarea>
-                <div class="profile-counter" id="aboutCounter" data-max="{{ profile_about_max_length }}"></div>
+                <div class="profile-counter" id="aboutCounter"></div>
                 <div class="profile-form-actions">
                     <button class="profile-cancel-btn" id="aboutCancel" type="button">Отмена</button>
                     <button class="profile-save-btn" type="submit">Сохранить</button>
@@ -83,10 +83,10 @@
 </div>
 {% endblock %}
 
-{% block extra_head %}
-<link href="{{ url_for('static', filename='css/profile.css') }}" rel="stylesheet">
+{% block styles %}
+<link href="{{ url_for('static', filename='css/pages/profile.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block scripts %}
-<script type="module" src="{{ url_for('static', filename='js/profile-page.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/pages/profile.js') }}"></script>
 {% endblock %}

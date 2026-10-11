@@ -1,0 +1,183 @@
+/* Окно с подробностями мероприятия. */
+
+.event-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-right: 32px;
+  margin-bottom: 16px;
+}
+
+.event-detail-title {
+  margin: 0 0 14px;
+  font-size: 20px;
+}
+
+.event-detail-meta {
+  padding: 0 0 16px;
+}
+
+.event-detail-description {
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.event-detail-modal .modal-close {
+  top: 8px;
+}
+
+.event-detail-modal .modal-content {
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  max-height: calc(var(--tg-viewport-stable-height, 100vh) - 80px);
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Скроллится только тело, поэтому панель действий может «прилипнуть» внизу */
+.event-detail-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.event-detail-modal .event-detail-header {
+  padding: 14px 56px 14px 20px;
+  margin-bottom: 0;
+  background-color: var(--bg-card-header);
+  border-bottom: 1px solid var(--border);
+}
+
+.event-detail-modal .event-detail-title {
+  margin: 0;
+  padding: 16px 20px 12px;
+  font-size: 20px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.event-detail-modal .event-detail-meta {
+  padding: 0 20px 18px;
+  gap: 10px;
+}
+
+.event-detail-modal .meta-item {
+  font-size: 15px;
+}
+
+.event-detail-modal .event-organizer-profile-link,
+.event-detail-modal .event-organizer-text {
+  display: flex;
+  flex-direction: column;
+  min-height: 44px;
+  justify-content: center;
+}
+
+.event-detail-modal .organizer-name {
+  font-weight: 600;
+}
+
+.event-detail-modal .organizer-username {
+  font-size: 13px;
+  color: var(--accent);
+}
+
+.event-detail-modal .event-organizer-meta {
+  align-items: center;
+}
+
+.event-detail-modal .event-organizer-profile-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.event-detail-modal .event-organizer-profile-link:visited {
+  color: var(--text-secondary);
+}
+
+.event-detail-modal .event-organizer-profile-link:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.event-detail-modal .event-detail-about {
+  padding: 16px 20px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.event-detail-section-label {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.event-detail-modal .event-detail-description {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 16px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.event-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+}
+
+.event-detail-actions:empty {
+  display: none;
+}
+
+.event-detail-actions .event-detail-action {
+  flex: 1 1 100%;
+  width: auto;
+  margin-top: 0;
+  min-height: 48px;
+  height: auto;
+  padding: 0 20px;
+}
+
+.event-detail-action-primary {
+  background: var(--success);
+}
+
+.event-detail-action-secondary {
+  background: var(--text-secondary);
+}
+
+.event-detail-action-danger {
+  background: var(--danger);
+}
+
+.event-detail-action:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.event-detail-notice {
+  align-self: center;
+  margin: 0 auto 0 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.event-detail-error {
+  color: var(--danger);
+}

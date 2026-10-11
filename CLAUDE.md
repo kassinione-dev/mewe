@@ -63,9 +63,31 @@ Telegram Mini App для студенческих мероприятий ДВФ�
 - Проверку `Origin` для изменяющих запросов к `/api/` (`before_request` в `__init__.py`) не ослаблять:
   cookie сессии вынужденно `SameSite=None`.
 
+## Фронтенд: архитектура
+
+Без сборщика: нативные ES-модули и обычный CSS, файлы отдаются как есть.
+
+```
+static/css/  tokens.css (палитра) → base.css → components/*.css → pages/*.css
+static/js/   boot/        классические скрипты в <head>, выполняются до отрисовки
+             core/        auth, http (requestJson), dom (h, icon), format, toast, storage
+             api/         все пути API — только здесь
+             components/  modal, event-card, event-detail, category-filter, event-form, empty-state
+             pages/       одна точка входа на страницу, подключается в {% block scripts %}
+templates/partials/       разметка, общая для нескольких страниц
+```
+
+- Зависимости: `pages` → `components` → `api`/`core`. Компоненты не знают о странице — общаются колбэками.
+- Запросы к API — только через `api/*` → `core/http.js` (`requestJson` бросает `ApiError`), не `fetch` напрямую.
+- Элементы — через `h()` из `core/dom.js`; пользовательский текст попадает в DOM только как текст.
+- Модальные окна — `components/modal.js`: разметка `.modal` + `[data-modal-close]`, состояние `.is-open`.
+- Стили привязываем к классам, не к `id`. Цвета — только через переменные из `tokens.css`.
+- Стили страницы подключаются в `{% block styles %}` после общих.
+- Перед коммитом фронтенда — сравнить скриншоты до/после и прогнать сценарии в браузере (Playwright).
+
 ## Фронтенд и тема
 
-- Тёмная тема выключена: подключение `theme.js` закомментировано в `templates/base.html`. Не включать без запроса.
+- Тёмная тема выключена: подключение `boot/theme.js` закомментировано в `templates/base.html`. Не включать без запроса.
 - Цвета темы Telegram (`themeParams`) не используем — только своя палитра в `static/css/common.css`.
 - `--accent` — текст, иконки, обводки; `--accent-fill` — заливка под белым текстом.
 

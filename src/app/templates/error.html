@@ -12,8 +12,8 @@
 
 {% block title %}{{ heading }} · MeWe{% endblock %}
 
-{% block extra_head %}
-<link href="{{ url_for('static', filename='css/error-page.css') }}" rel="stylesheet">
+{% block styles %}
+<link href="{{ url_for('static', filename='css/pages/error.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
