@@ -19,6 +19,7 @@ from ..repositories.participant_repository import (
 )
 from ..repositories.user_repository import get_user_for_update
 from ..schemas.event_schema import validate_create_event_payload
+from .pagination import Page
 
 EVENT_CREATE_COOLDOWN_MINUTES = 5
 EVENTS_PER_PAGE_DEFAULT = 15
@@ -72,7 +73,7 @@ def get_public_events(
     category_ids: list[int] | None,
     page: int,
     per_page: int,
-) -> tuple[list[tuple[Event, int]], int]:
+) -> Page[tuple[Event, int]]:
     if page < 1:
         raise ValidationError("page must be >= 1")
     if per_page < 1 or per_page > EVENTS_PER_PAGE_MAX:
@@ -80,7 +81,12 @@ def get_public_events(
 
     events, total = find_public_events(search, category_ids, page, per_page)
 
-    return _with_registered_counts(events), total
+    return Page(
+        items=_with_registered_counts(events),
+        total=total,
+        page=page,
+        per_page=per_page,
+    )
 
 
 def get_created_events(user_id: int) -> list[tuple[Event, int]]:

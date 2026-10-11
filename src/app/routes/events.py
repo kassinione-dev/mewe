@@ -32,17 +32,17 @@ def get_events():
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", EVENTS_PER_PAGE_DEFAULT, type=int)
 
-    events, total = get_public_events(search, category_ids or None, page, per_page)
+    events_page = get_public_events(search, category_ids or None, page, per_page)
     data = {
         "events": [
             serialize_event(event, registered_count)
-            for event, registered_count in events
+            for event, registered_count in events_page.items
         ],
         "pagination": {
-            "total": total,
-            "per_page": per_page,
-            "current_page": page,
-            "last_page": -(-total // per_page)
+            "total": events_page.total,
+            "per_page": events_page.per_page,
+            "current_page": events_page.page,
+            "last_page": events_page.last_page,
         }
     }
 
