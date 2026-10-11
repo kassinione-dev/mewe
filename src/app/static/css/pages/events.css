@@ -271,17 +271,22 @@
     flex-direction: column;
 }
 
+/* Две плитки в ряд; плитка, чьё название не влезает в половину строки, занимает строку целиком —
+   так слова не переносятся даже при увеличенном системном шрифте */
 .categories-grid {
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
     gap: 10px;
     padding: 6px 20px 16px;
 }
 
 .category-option {
+    flex: 1 1 calc(50% - 5px);
+    min-width: min(100%, max-content);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -316,7 +321,9 @@
 .category-option-name {
     flex: 1 1 auto;
     min-width: 0;
-    hyphens: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* галочка не занимает место, пока категория не выбрана: длинным названиям нужна вся ширина */
@@ -371,11 +378,7 @@
     }
 }
 
-@media (max-width: 360px) {
-    .categories-grid {
-        grid-template-columns: 1fr;
-    }
-}
+
 
 @media (max-width: 768px) {
   .search-bar-container {
