@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% if status_code == 401 %}
+    {% set icon, heading, text = "fa-user-lock", "Не удалось войти", "Вход повторяется автоматически — нажмите «Попробовать снова» через пару секунд. Если не поможет, перезапустите приложение." %}
+{% elif status_code == 403 %}
+    {% set icon, heading, text = "fa-lock", "Нет доступа", "У вас нет прав на просмотр этой страницы." %}
+{% elif status_code == 404 %}
+    {% set icon, heading, text = "fa-magnifying-glass", "Страница не найдена", "Возможно, она была удалена или ссылка неверна." %}
+{% else %}
+    {% set icon, heading, text = "fa-triangle-exclamation", "Что-то пошло не так", "Попробуйте ещё раз чуть позже." %}
+{% endif %}
+
+{% block title %}{{ heading }} · MeWe{% endblock %}
+
+{% block extra_head %}
+<link href="{{ url_for('static', filename='css/error-page.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="error-page-icon"><i class="fas {{ icon }}"></i></div>
+    <h1 class="error-page-title">{{ heading }}</h1>
+    <p class="error-page-text">{{ text }}</p>
+    {% if status_code == 401 %}
+    <button type="button" class="btn" onclick="location.reload()">Попробовать снова</button>
+    {% else %}
+    <a class="btn error-page-link" href="{{ url_for('index.render_events_page') }}">На главную</a>
+    {% endif %}
+</div>
+{% endblock %}

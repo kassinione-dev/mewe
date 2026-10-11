@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, request
 
+from .api import is_api_request
 from .errors import register_error_handlers
 from .exceptions import ForbiddenError
 from .extensions import db
@@ -46,7 +47,7 @@ def create_app():
 
     @app.before_request
     def check_request_origin():
-        if not request.path.startswith("/api/"):
+        if not is_api_request():
             return
 
         if request.method not in {"POST", "PUT", "PATCH", "DELETE"}:

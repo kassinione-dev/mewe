@@ -31,7 +31,6 @@ def render_events_page():
 
 
 @my_events_bp.route("/my_events")
-@login_required
 def render_my_event_page():
     categories = get_categories()
 
