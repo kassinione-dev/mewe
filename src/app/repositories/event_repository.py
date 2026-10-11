@@ -57,9 +57,9 @@ def find_public_events(search: str, category_ids: list[int] | None, page: int, p
     if search:
         query = query.filter(
             or_(
-                Event.title.ilike(f"%{search}%"),
-                Event.description.ilike(f"%{search}%"),
-                Event.location.ilike(f"%{search}%")
+                Event.title.icontains(search, autoescape=True),
+                Event.description.icontains(search, autoescape=True),
+                Event.location.icontains(search, autoescape=True)
             )
         )
 
