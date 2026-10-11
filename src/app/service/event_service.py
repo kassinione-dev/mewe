@@ -124,8 +124,7 @@ def join_event(user_id: int, event_id: int) -> tuple[Participant, int, bool]:
     if event.creator_id == user_id:
         raise ConflictError("creator cannot join their own event")
 
-    event_end = event.event_date
-    if event_end <= datetime.now(UTC):
+    if event.event_date <= datetime.now(UTC):
         raise ConflictError("event has already started")
 
     participant = get_participant(user_id, event_id)
