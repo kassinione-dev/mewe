@@ -60,9 +60,8 @@ footer {
 }
 
 .nav-icon {
-    width: 22px;
-    height: 22px;
-    display: block;
+    font-size: 19px;
+    line-height: 1;
 }
 
 .nav-label {

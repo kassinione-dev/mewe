@@ -25,7 +25,7 @@
 </head>
 <body>
 <div class="wrapper">
-    <img id="logo-png" src="{{ url_for('static', filename='icons/logo.png') }}" alt="logo_png" />
+    <img class="page-logo" src="{{ url_for('static', filename='icons/logo.png') }}" alt="" />
     {% block content %}{% endblock %}
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </div>

@@ -2,6 +2,14 @@
 
 {% block title %}{{ title }}{% endblock %}
 
+{% macro minutes_label(total) -%}
+{%- set h, m = total // 60, total % 60 -%}
+{{- (h ~ ' ч' if h else '') ~ (' ' if h and m else '') ~ (m ~ ' мин' if m else '') -}}
+{%- endmacro %}
+{% macro duration_range(min_minutes, max_minutes) -%}
+от {{ minutes_label(min_minutes) }} до {{ minutes_label(max_minutes) }}
+{%- endmacro %}
+
 {% block content %}
 <div id="my-events-page" class="my-events-page"
      data-search-url="{{ url_for('index.render_events_page') }}">
@@ -29,9 +37,7 @@
 </section>
 <div class="create-hero">
     <button class="new-event-btn" aria-label="Создать мероприятие">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M11 17C11 17.5523 11.4477 18 12 18C12.5523 18 13 17.5523 13 17V13H17C17.5523 13 18 12.5523 18 12C18 11.4477 17.5523 11 17 11H13V7C13 6.44771 12.5523 6 12 6C11.4477 6 11 6.44771 11 7V11H7C6.44772 11 6 11.4477 6 12C6 12.5523 6.44772 13 7 13H11V17Z" fill="currentColor"></path>
-        </svg>
+        <i class="fas fa-plus" aria-hidden="true"></i>
         <span class="new-event-label">Создать</span>
     </button>
 </div>
@@ -40,12 +46,15 @@
 <form class="create-form" id="event-form"
       data-min-duration="{{ min_event_duration_minutes }}"
       data-max-duration="{{ max_event_duration_minutes }}">
-    <button class="close-btn" type="button" aria-label="Закрыть" data-modal-close>
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M6 6L18 18M18 6L6 18"></path>
-        </svg>
+    <button class="modal-close" type="button" aria-label="Закрыть" data-modal-close>
+        <i class="fas fa-xmark" aria-hidden="true"></i>
     </button>
-    <h1 id="createEventTitle">Создание мероприятия</h1>
+    <h1 id="createEventTitle">Новое мероприятие</h1>
+
+    <label>
+        <span class="label-row">Название <span class="char-counter" data-counter-for="title"></span></span>
+        <input type="text" name="title" maxlength="{{ max_event_title_length }}" placeholder="Например, вечер настолок" required>
+    </label>
 
     <label>Категория
         <select name="category">
@@ -55,47 +64,43 @@
         </select>
     </label>
 
-    <label>
-        <span class="label-row">Место <span class="char-counter" data-counter-for="location"></span></span>
-        <input type="text" name="location" maxlength="{{ max_event_location_length }}" required>
-    </label>
-
-    <label>
-        <span class="label-row">Название <span class="char-counter" data-counter-for="title"></span></span>
-        <input type="text" name="title" maxlength="{{ max_event_title_length }}" required>
-    </label>
-
-    <div class="compact-row">
+    <div class="form-row">
         <label>Дата
-            <input type="date" name="date" id="event-date" required>
+            <input type="date" name="date" required>
         </label>
-        <label>Время
-            <input type="time" name="time" id="event-time" required>
-        </label>
-        <label>Кол-во чел.
-            <div class="input-with-icon">
-                <input type="number" name="participants" placeholder="" min="{{ min_event_participants }}" max="{{ max_event_participants }}" required>
-            </div>
+        <label>Начало
+            <input type="time" name="time" required>
         </label>
     </div>
 
-    <label class="duration-field">Продолжительность
-        <span class="duration-input">
+    <div class="field">
+        <span class="field-label" id="durationLabel">Продолжительность</span>
+        <div class="duration-input" role="group" aria-labelledby="durationLabel">
             <input type="number" name="duration_hours" min="0" max="{{ max_event_duration_minutes // 60 }}" step="1" value="1" aria-label="Часы" required>
-            <span class="duration-unit duration-hours-unit">ч</span>
-            <input type="number" name="duration_minutes" min="0" max="59" step="1" value="0" aria-label="Минуты" required>
+            <span class="duration-unit">ч</span>
+            <input type="number" name="duration_minutes" min="0" max="59" step="5" value="0" aria-label="Минуты" required>
             <span class="duration-unit">мин</span>
-        </span>
+        </div>
+        <span class="field-hint" data-duration-range>{{ duration_range(min_event_duration_minutes, max_event_duration_minutes) }}</span>
+    </div>
+
+    <label>
+        <span class="label-row">Место <span class="char-counter" data-counter-for="location"></span></span>
+        <input type="text" name="location" maxlength="{{ max_event_location_length }}" placeholder="Корпус, аудитория, адрес" required>
     </label>
-    <div class="required-note" data-duration-range>от {{ '%02d:%02d' % (min_event_duration_minutes // 60, min_event_duration_minutes % 60) }} до {{ '%02d:%02d' % (max_event_duration_minutes // 60, max_event_duration_minutes % 60) }}</div>
+
+    <label>Участников
+        <input type="number" class="no-spinner" name="participants" inputmode="numeric"
+               min="{{ min_event_participants }}" max="{{ max_event_participants }}"
+               placeholder="от {{ min_event_participants }} до {{ max_event_participants }}" required>
+    </label>
 
     <label>
         <span class="label-row">Описание <span class="char-counter" data-counter-for="description"></span></span>
-        <textarea name="description" maxlength="{{ max_event_description_length }}" required></textarea>
+        <textarea name="description" maxlength="{{ max_event_description_length }}" placeholder="Что будет, что взять с собой" required></textarea>
     </label>
-    <div class="required-note">все поля обязательны для заполнения</div>
 
-    <button class="btn s-btn" type="submit">СОЗДАТЬ</button>
+    <button class="btn s-btn" type="submit">Создать мероприятие</button>
 </form>
 </div>
 

@@ -1,4 +1,5 @@
 import { updateAbout } from '../api/users.js';
+import { formatLocalDate } from '../core/format.js';
 import { showToast } from '../core/toast.js';
 
 // Профиль: запасной аватар, если фото Telegram не загрузилось, и редактирование «О себе»
@@ -74,5 +75,14 @@ function initAboutEditor() {
   updateCounter();
 }
 
+// Сервер отдаёт даты в UTC: во Владивостоке до 10:00 это ещё «вчера»
+function localizeDates() {
+  document.querySelectorAll('time[data-local-date]').forEach(element => {
+    const formatted = formatLocalDate(element.dateTime);
+    if (formatted) element.textContent = formatted;
+  });
+}
+
 initAvatarFallback();
 initAboutEditor();
+localizeDates();

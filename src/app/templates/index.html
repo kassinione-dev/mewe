@@ -6,26 +6,16 @@
 <div id="events-page" data-create-url="{{ url_for('my_events.render_my_event_page') }}">
 <div class="events-toolbar">
 <div class="search-bar-container">
-    <div class="search-icon-left">
-        <!-- Material Icons: search -->
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
-            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-        </svg>
-    </div>
+    <div class="search-icon-left"><i class="fas fa-magnifying-glass" aria-hidden="true"></i></div>
     <input type="text" class="search-input" id="searchInput" placeholder="Поиск по названию, месту, описанию" aria-label="Поиск мероприятий" enterkeyhint="search" autocomplete="off" />
     <button class="search-clear" id="searchClear" type="button" aria-label="Очистить поиск" hidden>
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M6 6L18 18M18 6L6 18"></path>
-        </svg>
+        <i class="fas fa-xmark" aria-hidden="true"></i>
     </button>
-    <div class="categories-tab" id="categoriesTab" tabindex="0" role="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Выбор категории">
-        <!-- Material Icons: grid_view -->
-        <svg class="categories-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
-            <path d="M3 3v8h8V3H3zm6 6H5V5h4v4zm-6 4v8h8v-8H3zm6 6H5v-4h4v4zm4-16v8h8V3h-8zm6 6h-4V5h4v4zm-6 4v8h8v-8h-8zm6 6h-4v-4h4v4z"/>
-        </svg>
+    <button class="categories-tab" id="categoriesTab" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Выбор категории">
+        <i class="fas fa-table-cells-large categories-icon" aria-hidden="true"></i>
         <span>Категории</span>
         <span class="categories-count" id="categoriesCount" hidden></span>
-    </div>
+    </button>
 </div>
 <div id="selectedCategoryFilter" class="selected-category-filter" hidden aria-label="Выбранные категории">
 </div>
@@ -45,27 +35,17 @@
     <div class="modal-overlay" data-modal-close></div>
     <div class="modal-content">
         <button class="modal-close" type="button" aria-label="Закрыть" data-modal-close>
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M6 6L18 18M18 6L6 18"></path>
-            </svg>
+            <i class="fas fa-xmark" aria-hidden="true"></i>
         </button>
         <h2 id="modalTitle">Категории</h2>
-        <div class="events-container categories-container">
+        <div class="categories-grid">
             {% for category in categories %}
-            <div class="event-card" tabindex="0" role="button" aria-pressed="false" data-category-id="{{ category.id }}" data-category-name="{{ category.name }}">
-                <div class="event-header">
-                    <span class="event-category">
-                        {% if category.icon %}
-                            <i class="fas {{ category.icon }}"></i>
-                        {% else %}
-                            🔹
-                        {% endif %}
-                        {{ category.name }}
-                    </span>
-                </div>
-                <h3>{{ category.name }}</h3>
-                <div class="event-meta"></div>
-            </div>
+            <button class="category-option" type="button" aria-pressed="false"
+                    data-category-id="{{ category.id }}" data-category-name="{{ category.name }}">
+                <i class="fas {{ category.icon or 'fa-tag' }} category-option-icon" aria-hidden="true"></i>
+                <span class="category-option-name">{{ category.name }}</span>
+                <i class="fas fa-check category-option-check" aria-hidden="true"></i>
+            </button>
             {% endfor %}
         </div>
         <div class="categories-footer">

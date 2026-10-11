@@ -19,7 +19,7 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 20px 20px 14px;
+    padding: 20px;
 }
 
 .profile-avatar {
@@ -276,7 +276,7 @@
     }
 
     .profile-identity {
-        padding: 16px 16px 14px;
+        padding: 16px;
     }
 
     .profile-stats {

@@ -80,6 +80,7 @@
 
 .event-detail-modal .organizer-name {
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .event-detail-modal .organizer-username {
@@ -162,8 +163,11 @@
   background: var(--text-secondary);
 }
 
+/* Удаление — не главное действие: обводка вместо заливки */
 .event-detail-action-danger {
-  background: var(--danger);
+  border: 1px solid var(--danger);
+  background: transparent;
+  color: var(--danger);
 }
 
 .event-detail-action:disabled {

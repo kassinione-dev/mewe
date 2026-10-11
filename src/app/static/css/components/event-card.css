@@ -62,8 +62,8 @@
 
 .event-date {
   font-size: 14px;
-  color: var(--text-primary);
-  font-weight: 600;
+  color: var(--text-secondary);
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
@@ -85,7 +85,6 @@
   align-items: center;
 }
 
-.event-meta span,
 .meta-item {
   font-size: 14px;
   color: var(--text-secondary);

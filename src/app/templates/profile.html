@@ -2,17 +2,18 @@
 
 {% block title %}{{ title }}{% endblock %}
 
+{# Дата в UTC уходит в datetime=, а показывает её pages/profile.js в поясе пользователя #}
+{% macro local_date(value) -%}
+{%- if value -%}
+<time datetime="{{ value.isoformat() }}" data-local-date>{{ value.strftime('%d.%m.%Y') }}</time>
+{%- else -%}
+—
+{%- endif -%}
+{%- endmacro %}
+
 {% block content %}
 <div id="profile-page" class="profile-page">
     <div class="profile-card">
-        <div class="event-header">
-            <div class="event-category">
-                <i class="fas fa-user"></i>Профиль
-            </div>
-            {% if role_label %}
-            <div class="profile-role"><i class="fas fa-shield-halved"></i>{{ role_label }}</div>
-            {% endif %}
-        </div>
 
         <div class="profile-identity">
             <div class="profile-avatar">
@@ -30,6 +31,9 @@
             </div>
             <div class="profile-names">
                 <h2 class="profile-name">{{ user.first_name }}{% if user.last_name %} {{ user.last_name }}{% endif %}</h2>
+                {% if role_label %}
+                <div class="profile-role"><i class="fas fa-shield-halved" aria-hidden="true"></i>{{ role_label }}</div>
+                {% endif %}
                 {% if user.username %}
                 <a class="profile-username" href="https://t.me/{{ user.username }}" target="_blank" rel="noopener">@{{ user.username }}</a>
                 {% endif %}
@@ -47,11 +51,11 @@
             </div>
             <div class="profile-stat">
                 <dt><i class="fas fa-user-plus icon"></i>С нами с</dt>
-                <dd>{{ user.created_at.strftime('%d.%m.%Y') if user.created_at else '—' }}</dd>
+                <dd>{{ local_date(user.created_at) }}</dd>
             </div>
             <div class="profile-stat">
-                <dt><i class="fas fa-clock icon"></i>Был(а) в сети</dt>
-                <dd>{{ user.last_login_at.strftime('%d.%m.%Y') if user.last_login_at else '—' }}</dd>
+                <dt><i class="fas fa-clock icon"></i>Последний вход</dt>
+                <dd>{{ local_date(user.last_login_at) }}</dd>
             </div>
         </dl>
 

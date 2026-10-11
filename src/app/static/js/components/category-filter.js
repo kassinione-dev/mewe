@@ -36,9 +36,7 @@ export function createCategoryFilter({ tab, count, chips, modalRoot, onChange })
     }, icon('fa-tag'), h('span', { text: name }), icon('fa-times'))));
 
     options.forEach(option => {
-      const isSelected = selected.has(option.dataset.categoryId);
-      option.classList.toggle('category-selected', isSelected);
-      option.setAttribute('aria-pressed', String(isSelected));
+      option.setAttribute('aria-pressed', String(selected.has(option.dataset.categoryId)));
     });
   }
 
@@ -54,23 +52,9 @@ export function createCategoryFilter({ tab, count, chips, modalRoot, onChange })
     changed();
   }
 
-  options.forEach(option => {
-    option.addEventListener('click', () => toggle(option));
-    option.addEventListener('keydown', event => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        toggle(option);
-      }
-    });
-  });
+  options.forEach(option => option.addEventListener('click', () => toggle(option)));
 
   tab.addEventListener('click', modal.open);
-  tab.addEventListener('keydown', event => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      modal.open();
-    }
-  });
 
   resetButton.addEventListener('click', () => {
     selected.clear();

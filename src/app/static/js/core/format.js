@@ -69,6 +69,13 @@ export function formatEventDate(event) {
   return `${start.toLocaleDateString('ru-RU', options)}, ${time}`;
 }
 
+// «12.10.2026» в поясе пользователя; пустая строка для некорректного значения
+export function formatLocalDate(isoString) {
+  const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
 // Дата для <input type="date"> по часам пользователя (toISOString дал бы дату в UTC)
 export function toDateInputValue(date) {
   return [
