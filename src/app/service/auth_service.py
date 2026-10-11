@@ -1,32 +1,13 @@
 from datetime import UTC, datetime
-from functools import wraps
 from typing import Any
 
-from flask import current_app, session
+from flask import current_app
 
-from ..exceptions import InvalidInitDataError, UnauthorizedError, ValidationError
+from ..exceptions import InvalidInitDataError, ValidationError
 from ..extensions import db
 from ..models import User
 from ..repositories.user_repository import get_user_by_telegram_id
 from ..schemas.auth_schema import validate_init_data
-
-
-def get_current_user_id() -> int:
-    user_id = session.get("user_id")
-
-    if not isinstance(user_id, int) or isinstance(user_id, bool):
-        raise UnauthorizedError("authentication required")
-
-    return user_id
-
-
-def login_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        get_current_user_id()
-
-        return f(*args, **kwargs)
-    return decorated
 
 
 def auth_or_create_user(payload: dict[str, Any]) -> User:
@@ -63,7 +44,5 @@ def auth_or_create_user(payload: dict[str, Any]) -> User:
 
     user.last_login_at = datetime.now(UTC)
     db.session.commit()
-
-    session["user_id"] = user.id
 
     return user

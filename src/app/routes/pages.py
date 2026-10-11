@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template
 
+from ..auth import get_current_user_id, login_required
 from ..exceptions import NotFoundError
 from ..field_limits import (
     EVENT_DESCRIPTION_MAX_LENGTH,
@@ -14,7 +15,6 @@ from ..field_limits import (
 from ..repositories.category_repository import get_all_categories
 from ..repositories.participant_repository import get_participation_count
 from ..repositories.user_repository import get_user_by_id
-from ..service.auth_service import get_current_user_id, login_required
 
 index_bp = Blueprint("index", __name__)
 my_events_bp = Blueprint("my_events", __name__)

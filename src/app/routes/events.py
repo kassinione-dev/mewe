@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify, request
 
+from ..auth import get_current_user_id, login_required
 from ..exceptions import ValidationError
 from ..serializers.event_serializer import serialize_event
 from ..serializers.participant_serializer import serialize_participant
-from ..service.auth_service import get_current_user_id, login_required
 from ..service.event_service import (
     EVENTS_PER_PAGE_DEFAULT,
     delete_event,
