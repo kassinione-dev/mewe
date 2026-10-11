@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template
 
 from ..auth import get_current_user_id, login_required
-from ..exceptions import NotFoundError
 from ..field_limits import (
     EVENT_DESCRIPTION_MAX_LENGTH,
     EVENT_LOCATION_MAX_LENGTH,
@@ -12,9 +11,8 @@ from ..field_limits import (
     EVENT_TITLE_MAX_LENGTH,
     USER_ABOUT_MAX_LENGTH,
 )
-from ..repositories.category_repository import get_all_categories
-from ..repositories.participant_repository import get_participation_count
-from ..repositories.user_repository import get_user_by_id
+from ..service.event_service import get_categories
+from ..service.profile_service import get_profile
 
 index_bp = Blueprint("index", __name__)
 my_events_bp = Blueprint("my_events", __name__)
@@ -23,7 +21,7 @@ profile_bp = Blueprint("profile", __name__)
 
 @index_bp.route("/")
 def render_events_page():
-    categories = get_all_categories()
+    categories = get_categories()
 
     return render_template(
         "index.html",
@@ -35,7 +33,7 @@ def render_events_page():
 @my_events_bp.route("/my_events")
 @login_required
 def render_my_event_page():
-    categories = get_all_categories()
+    categories = get_categories()
 
     return render_template(
         "my_events.html",
@@ -51,37 +49,26 @@ def render_my_event_page():
     )
 
 
-@profile_bp.route("/profile")
-@login_required
-def render_profile_page():
-    user = get_user_by_id(get_current_user_id())
-
-    if user is None:
-        raise NotFoundError("user not found")
-
-    return render_template(
-        "profile.html",
-        title="MeWe",
-        user=user,
-        is_own=True,
-        participation_count=get_participation_count(user.id),
-        profile_about_max_length=USER_ABOUT_MAX_LENGTH,
-    )
-
-
-@profile_bp.route("/<int:user_id>/profile")
-@login_required
-def render_user_profile_page(user_id: int):
-    user = get_user_by_id(user_id)
-
-    if user is None:
-        raise NotFoundError("user not found")
+def _render_profile(user_id: int):
+    user, participation_count = get_profile(user_id)
 
     return render_template(
         "profile.html",
         title="MeWe",
         user=user,
         is_own=user.id == get_current_user_id(),
-        participation_count=get_participation_count(user.id),
+        participation_count=participation_count,
         profile_about_max_length=USER_ABOUT_MAX_LENGTH,
     )
+
+
+@profile_bp.route("/profile")
+@login_required
+def render_profile_page():
+    return _render_profile(get_current_user_id())
+
+
+@profile_bp.route("/<int:user_id>/profile")
+@login_required
+def render_user_profile_page(user_id: int):
+    return _render_profile(user_id)

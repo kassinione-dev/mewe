@@ -3,7 +3,8 @@ from typing import Any
 
 from ..exceptions import ConflictError, ForbiddenError, NotFoundError, ValidationError
 from ..extensions import db
-from ..models import Event, Participant
+from ..models import Category, Event, Participant
+from ..repositories.category_repository import get_all_categories
 from ..repositories.event_repository import (
     find_public_events,
     get_event_by_id,
@@ -60,6 +61,10 @@ def create_event(user_id: int, payload: dict[str, Any]) -> Event:
     db.session.commit()
 
     return event
+
+
+def get_categories() -> list[Category]:
+    return get_all_categories()
 
 
 def _with_registered_counts(events: list[Event]) -> list[tuple[Event, int]]:
