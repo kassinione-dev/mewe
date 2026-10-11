@@ -87,7 +87,9 @@ templates/partials/       разметка, общая для нескольки
 
 ## Фронтенд и тема
 
-- Тёмная тема выключена: подключение `boot/theme.js` закомментировано в `templates/base.html`. Не включать без запроса.
+- Тема: `static/js/boot/theme.js` (в `<head>`, до отрисовки) ставит `data-theme` и красит шапку Telegram;
+  режим `auto`/`light`/`dark` хранится в `localStorage` и Telegram `CloudStorage`. Интерфейс к ней —
+  `window.MeWeTheme`, переключатель — в своём профиле (`components/theme-switcher.js`).
 - Цвета темы Telegram (`themeParams`) не используем — только своя палитра в `static/css/common.css`.
 - `--accent` — текст, иконки, обводки; `--accent-fill` — заливка под белым текстом.
 

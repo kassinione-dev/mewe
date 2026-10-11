@@ -1,6 +1,9 @@
 /* Палитра и шрифты. Тёмная тема — переопределение тех же переменных. */
 
 :root {
+  /* нативные элементы (календарь, select, полосы прокрутки) — в цвет темы */
+  color-scheme: light;
+
   --fefu-blue: #3B63AB;
   --fefu-red: #BC2940;
 
@@ -27,6 +30,8 @@
 }
 
 [data-theme="dark"] {
+  color-scheme: dark;
+
   --bg-page: #1C1C1E;
   --bg-card: #2C2C2E;
   --bg-card-header: #2C2C2E;

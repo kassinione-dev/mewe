@@ -83,6 +83,24 @@
             {% endif %}
         </div>
         {% endif %}
+
+        {% if is_own %}
+        <div class="profile-section">
+            <span class="profile-label" id="themeLabel">Оформление</span>
+            <div class="segmented" role="radiogroup" aria-labelledby="themeLabel" aria-describedby="themeHint" data-theme-switcher>
+                <button class="segmented-option" type="button" role="radio" aria-checked="false" data-theme-mode="auto">
+                    <i class="fas fa-circle-half-stroke" aria-hidden="true"></i>Авто
+                </button>
+                <button class="segmented-option" type="button" role="radio" aria-checked="false" data-theme-mode="light">
+                    <i class="fas fa-sun" aria-hidden="true"></i>Светлая
+                </button>
+                <button class="segmented-option" type="button" role="radio" aria-checked="false" data-theme-mode="dark">
+                    <i class="fas fa-moon" aria-hidden="true"></i>Тёмная
+                </button>
+            </div>
+            <p class="profile-hint" id="themeHint">«Авто» — как в Telegram</p>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

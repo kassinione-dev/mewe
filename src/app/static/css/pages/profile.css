@@ -266,6 +266,62 @@
     cursor: default;
 }
 
+/* ---------- Оформление ---------- */
+
+.profile-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px 20px 20px;
+    border-top: 1px solid var(--border);
+}
+
+.profile-hint {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* Сегментированный выбор из нескольких вариантов (role="radiogroup") */
+.segmented {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-page);
+}
+
+.segmented-option {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 8px;
+    border: none;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.segmented-option[aria-checked="true"] {
+    background: var(--accent-fill);
+    color: var(--text-on-accent);
+}
+
+.segmented-option:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 @media (max-width: 768px) {
     .profile-page {
         padding: 0 16px 30px;
@@ -283,7 +339,8 @@
         padding: 0 16px 16px;
     }
 
-    .profile-about {
+    .profile-about,
+    .profile-section {
         padding: 14px 16px 16px;
     }
 }

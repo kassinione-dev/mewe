@@ -1,6 +1,7 @@
 import { updateAbout } from '../api/users.js';
 import { formatLocalDate } from '../core/format.js';
 import { showToast } from '../core/toast.js';
+import { initThemeSwitcher } from '../components/theme-switcher.js';
 
 // Профиль: запасной аватар, если фото Telegram не загрузилось, и редактирование «О себе»
 
@@ -86,3 +87,4 @@ function localizeDates() {
 initAvatarFallback();
 initAboutEditor();
 localizeDates();
+initThemeSwitcher(document.querySelector('[data-theme-switcher]'));
