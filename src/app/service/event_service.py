@@ -8,10 +8,13 @@ from ..repositories.event_repository import (
     find_public_events,
     get_event_by_id,
     get_event_for_update,
+    get_events_by_participant,
+    get_events_by_user,
 )
 from ..repositories.participant_repository import (
     get_participant,
     get_registered_count,
+    get_registered_counts,
     is_user_registered,
 )
 from ..repositories.user_repository import get_user_for_update
@@ -58,7 +61,18 @@ def create_event(user_id: int, payload: dict[str, Any]) -> Event:
     return event
 
 
-def get_public_events(search: str, category_ids: list[int] | None, page: int, per_page: int) -> tuple[list[Event], int]:
+def _with_registered_counts(events: list[Event]) -> list[tuple[Event, int]]:
+    registered_counts = get_registered_counts([event.id for event in events])
+
+    return [(event, registered_counts.get(event.id, 0)) for event in events]
+
+
+def get_public_events(
+    search: str,
+    category_ids: list[int] | None,
+    page: int,
+    per_page: int,
+) -> tuple[list[tuple[Event, int]], int]:
     if page < 1:
         raise ValidationError("page must be >= 1")
     if per_page < 1 or per_page > EVENTS_PER_PAGE_MAX:
@@ -66,10 +80,18 @@ def get_public_events(search: str, category_ids: list[int] | None, page: int, pe
 
     events, total = find_public_events(search, category_ids, page, per_page)
 
-    return events, total
+    return _with_registered_counts(events), total
 
 
-def get_participant_status_service(user_id: int, event_id: int) -> tuple[bool, bool]:
+def get_created_events(user_id: int) -> list[tuple[Event, int]]:
+    return _with_registered_counts(get_events_by_user(user_id))
+
+
+def get_participating_events(user_id: int) -> list[tuple[Event, int]]:
+    return _with_registered_counts(get_events_by_participant(user_id))
+
+
+def get_participant_status_service(user_id: int, event_id: int) -> tuple[bool, bool, int]:
     event = get_event_by_id(event_id)
 
     if event is None:
@@ -77,8 +99,9 @@ def get_participant_status_service(user_id: int, event_id: int) -> tuple[bool, b
 
     is_creator = event.creator_id == user_id
     is_registered = is_user_registered(user_id, event_id)
+    registered_count = get_registered_count(event_id)
 
-    return is_creator, is_registered
+    return is_creator, is_registered, registered_count
 
 
 def join_event(user_id: int, event_id: int) -> tuple[Participant, int, bool]:

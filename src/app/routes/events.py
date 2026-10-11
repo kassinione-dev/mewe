@@ -1,10 +1,6 @@
 from flask import Blueprint, jsonify, request
 
 from ..exceptions import ValidationError
-from ..repositories.participant_repository import (
-    get_registered_count,
-    get_registered_counts,
-)
 from ..serializers.event_serializer import serialize_event
 from ..serializers.participant_serializer import serialize_participant
 from ..service.auth_service import get_current_user_id, login_required
@@ -37,11 +33,10 @@ def get_events():
     per_page = request.args.get("per_page", EVENTS_PER_PAGE_DEFAULT, type=int)
 
     events, total = get_public_events(search, category_ids or None, page, per_page)
-    registered_counts = get_registered_counts([event.id for event in events])
     data = {
         "events": [
-            serialize_event(event, registered_counts.get(event.id, 0))
-            for event in events
+            serialize_event(event, registered_count)
+            for event, registered_count in events
         ],
         "pagination": {
             "total": total,
@@ -81,8 +76,7 @@ def delete_my_event(event_id: int):
 def get_participant_status(event_id: int):
     user_id = get_current_user_id()
 
-    is_creator, is_registered = get_participant_status_service(user_id, event_id)
-    registered_count = get_registered_count(event_id)
+    is_creator, is_registered, registered_count = get_participant_status_service(user_id, event_id)
     data = {
         "is_creator": is_creator,
         "is_registered": is_registered,
