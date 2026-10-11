@@ -15,6 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
   form.addEventListener('input', updateCounters);
   updateCounters();
 
+  // Минимальная дата — сегодня по часам пользователя (toISOString дал бы дату в UTC)
+  const today = new Date();
+  document.getElementById('event-date').min = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, '0'),
+    String(today.getDate()).padStart(2, '0'),
+  ].join('-');
+
   form.querySelectorAll('[required]').forEach(field => {
     field.addEventListener('input', () => {
       field.classList.toggle('invalid', !field.value);
@@ -74,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
       category: Number(form.category.value),
       max_participants: Number(form.participants.value),
       duration_minutes: durationMinutes,
-      event_date: `${dateVal}T${timeVal}:00`
+      event_date: eventDateTime.toISOString()
     };
 
     try {

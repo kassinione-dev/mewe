@@ -1,5 +1,3 @@
-from datetime import date
-
 from flask import Blueprint, render_template
 
 from ..exceptions import NotFoundError
@@ -51,7 +49,6 @@ def render_my_event_page():
         max_event_title_length=EVENT_TITLE_MAX_LENGTH,
         max_event_location_length=EVENT_LOCATION_MAX_LENGTH,
         max_event_description_length=EVENT_DESCRIPTION_MAX_LENGTH,
-        today=date.today().isoformat()
     )
 
 

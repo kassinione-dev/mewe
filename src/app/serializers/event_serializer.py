@@ -28,5 +28,4 @@ def serialize_event(event: Event, registered_count: int = 0) -> dict:
         "registered_count": registered_count,
         "event_date": event.event_date.isoformat(),
         "duration_minutes": event.duration_minutes,
-        "formatted_date": event.event_date.strftime("%d.%m.%Y %H:%M"),
     }

@@ -74,11 +74,10 @@ export function isEventPast(event, now = Date.now()) {
 }
 
 export function formatEventDate(event) {
-  // Нужен сырой ISO в event.event_date. Если бэкенд его не отдаёт — fallback.
-  if (!event.event_date) return event.formatted_date;
+  if (!event.event_date) return '';
 
   const d = new Date(event.event_date);
-  if (Number.isNaN(d.getTime())) return event.formatted_date;
+  if (Number.isNaN(d.getTime())) return '';
 
   const now = new Date();
   const dayDiff = Math.round(
