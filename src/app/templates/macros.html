@@ -1,0 +1,4 @@
+{# Иконка Material Symbols. Имя должно быть в src/app/icons.py — шрифт содержит только их #}
+{% macro icon(name, class='') -%}
+<span class="ms{% if class %} {{ class }}{% endif %}" aria-hidden="true">{{ name }}</span>
+{%- endmacro %}

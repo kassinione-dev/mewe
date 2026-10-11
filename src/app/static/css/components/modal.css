@@ -69,8 +69,8 @@
   transition: color 0.2s ease;
 }
 
-.modal-close i {
-  font-size: 20px;
+.modal-close .ms {
+  font-size: 24px;
 }
 
 .modal-close:hover {

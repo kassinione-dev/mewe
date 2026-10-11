@@ -25,7 +25,7 @@ const sections = {
     errorText: 'Ошибка загрузки записей',
     cardOptions: {},
     empty: {
-      icon: 'fa-users',
+      icon: 'group',
       title: 'Вы пока не записались на мероприятия',
       text: 'Найдите интересное в общем списке и запишитесь.',
       action: { label: 'Найти мероприятие', href: page.dataset.searchUrl }
@@ -40,7 +40,7 @@ const sections = {
     // организатор здесь всегда сам пользователь — строка с ником только повторяется
     cardOptions: { showOrganizer: false },
     empty: {
-      icon: 'fa-calendar-plus',
+      icon: 'calendar_add_on',
       title: 'Вы пока не создали мероприятий',
       text: 'Оно появится в общем списке, и на него смогут записаться другие.',
       action: { label: 'Создать мероприятие', onClick: () => createEventModal.open() }

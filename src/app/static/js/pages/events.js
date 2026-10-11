@@ -80,14 +80,14 @@ function emptyState() {
   const hasFilters = Boolean(state.query) || state.categoryIds.length > 0;
   if (hasFilters) {
     return createEmptyState({
-      icon: 'fa-magnifying-glass',
+      icon: 'search',
       title: 'Ничего не найдено',
       text: 'Попробуйте изменить запрос или убрать фильтры.',
       action: { label: 'Сбросить фильтры', onClick: resetFilters }
     });
   }
   return createEmptyState({
-    icon: 'fa-calendar',
+    icon: 'calendar_today',
     title: 'Пока нет предстоящих мероприятий',
     text: 'Загляните позже или создайте своё.',
     action: { label: 'Создать мероприятие', href: page.dataset.createUrl }

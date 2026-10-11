@@ -7,6 +7,7 @@ from .api import is_api_request
 from .errors import register_error_handlers
 from .exceptions import ForbiddenError
 from .extensions import db
+from .icons import register_icons
 
 load_dotenv()
 
@@ -44,6 +45,7 @@ def create_app():
     db.init_app(app)
 
     register_error_handlers(app)
+    register_icons(app)
 
     @app.before_request
     def check_request_origin():

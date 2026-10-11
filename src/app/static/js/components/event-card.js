@@ -5,7 +5,7 @@ import { formatDuration, formatEventDate, isEventPast, spotsLeftLabel } from '..
 
 export function createCategoryBadge(event) {
   return h('div', { className: 'event-category' },
-    event.category_icon && icon(event.category_icon),
+    icon(event.category_icon || 'label'),
     event.category_name || 'Без категории'
   );
 }
@@ -15,11 +15,11 @@ export function createMetaItem(iconName, text) {
 }
 
 export function createLocationItem(event) {
-  return createMetaItem('fa-map-marker-alt', event.location);
+  return createMetaItem('location_on', event.location);
 }
 
 export function createDurationItem(event) {
-  return createMetaItem('fa-clock', formatDuration(event.duration_minutes));
+  return createMetaItem('schedule', formatDuration(event.duration_minutes));
 }
 
 // Счётчик «1 / 2», статус («еще 1 место» / «мест нет» / «завершено») и полоса заполненности
@@ -40,7 +40,7 @@ export function createParticipants(event) {
 
   return h('div', { className: 'event-participants' },
     h('div', { className: 'meta-item' },
-      icon('fa-users', 'icon'),
+      icon('group', 'icon'),
       `${registered} / ${max}`,
       h('span', { className: `participants-status${statusClass}`, text: statusText })
     ),
@@ -57,7 +57,7 @@ function createOrganizerLine(event) {
   if (!event.creator_username && !event.creator_name) return null;
 
   return h('div', { className: 'event-organizer' },
-    icon('fa-user', 'icon'),
+    icon('person', 'icon'),
     h('span', { text: event.creator_username ? `@${event.creator_username}` : event.creator_name })
   );
 }

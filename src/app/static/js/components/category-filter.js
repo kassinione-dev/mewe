@@ -33,7 +33,7 @@ export function createCategoryFilter({ tab, count, chips, modalRoot, onChange })
         selected.delete(id);
         changed();
       }
-    }, icon('fa-tag'), h('span', { text: name }), icon('fa-times'))));
+    }, icon('sell'), h('span', { text: name }), icon('close'))));
 
     options.forEach(option => {
       option.setAttribute('aria-pressed', String(selected.has(option.dataset.categoryId)));

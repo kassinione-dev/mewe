@@ -20,7 +20,8 @@ export function h(tag, props = {}, ...children) {
   return element;
 }
 
-// Иконка Font Awesome: icon('fa-clock', 'icon') → <i class="fas fa-clock icon">
+// Иконка Material Symbols: icon('schedule', 'icon') → <span class="ms icon">schedule</span>
+// Имя должно быть в src/app/icons.py — шрифт загружается только с этими иконками
 export function icon(name, className = '') {
-  return h('i', { className: `fas ${name}${className ? ` ${className}` : ''}`, 'aria-hidden': 'true' });
+  return h('span', { className: `ms${className ? ` ${className}` : ''}`, 'aria-hidden': 'true', text: name });
 }

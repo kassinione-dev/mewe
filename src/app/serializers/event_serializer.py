@@ -1,3 +1,4 @@
+from ..icons import category_icon
 from ..models import Event
 
 
@@ -23,7 +24,7 @@ def serialize_event(event: Event, registered_count: int = 0) -> dict:
         "creator_username": creator_username,
         "category_id": event.category_id,
         "category_name": event.category.name if event.category else None,
-        "category_icon": event.category.icon if event.category else None,
+        "category_icon": category_icon(event.category.icon) if event.category else None,
         "max_participants": event.max_participants,
         "registered_count": registered_count,
         "event_date": event.event_date.isoformat(),

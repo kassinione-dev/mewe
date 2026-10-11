@@ -21,6 +21,28 @@ html, body {
   color: var(--text-primary);
 }
 
+/* Иконка Material Symbols: имя иконки — текст элемента (лигатура), см. macros.html и core/dom.js */
+.ms {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1em;
+  overflow: hidden;
+  font-family: 'Material Symbols Outlined';
+  font-size: 1.25em;
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  /* лигатура ломается от регистра и разрядки, которые бывают у родителя (чипы категорий) */
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
 .btn {
   border: 0;
   border-radius: 10px;

@@ -77,8 +77,8 @@
   opacity: 0.6;
 }
 
-.search-icon-left i {
-  font-size: 17px;
+.search-icon-left .ms {
+  font-size: 22px;
 }
 
 .categories-tab {
@@ -107,8 +107,7 @@
 }
 
 .categories-icon {
-  flex-shrink: 0;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .categories-modal .modal-content {
@@ -165,8 +164,8 @@
     display: none;
 }
 
-.search-clear i {
-    font-size: 14px;
+.search-clear .ms {
+    font-size: 18px;
 }
 
 .categories-tab {
@@ -285,9 +284,9 @@
 .category-option {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     min-height: 52px;
-    padding: 8px 14px;
+    padding: 8px 12px;
     border: 1px solid var(--border);
     border-radius: 12px;
     background: var(--bg-card);
@@ -310,23 +309,21 @@
 }
 
 .category-option-icon {
-    flex-shrink: 0;
-    width: 18px;
-    text-align: center;
+    font-size: 20px;
     color: var(--accent);
 }
 
 .category-option-name {
     flex: 1 1 auto;
     min-width: 0;
-    overflow-wrap: anywhere;
+    hyphens: auto;
 }
 
+/* галочка не занимает место, пока категория не выбрана: длинным названиям нужна вся ширина */
 .category-option-check {
-    flex-shrink: 0;
-    font-size: 13px;
+    display: none;
+    font-size: 18px;
     color: var(--accent);
-    visibility: hidden;
 }
 
 .category-option[aria-pressed="true"] {
@@ -335,7 +332,7 @@
 }
 
 .category-option[aria-pressed="true"] .category-option-check {
-    visibility: visible;
+    display: inline-block;
 }
 
 .categories-footer {

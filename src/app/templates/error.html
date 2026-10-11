@@ -1,13 +1,14 @@
 {% extends "base.html" %}
+{% from "macros.html" import icon %}
 
 {% if status_code == 401 %}
-    {% set icon, heading, text = "fa-user-lock", "Не удалось войти", "Вход повторяется автоматически — нажмите «Попробовать снова» через пару секунд. Если не поможет, перезапустите приложение." %}
+    {% set icon_name, heading, text = "lock_person", "Не удалось войти", "Вход повторяется автоматически — нажмите «Попробовать снова» через пару секунд. Если не поможет, перезапустите приложение." %}
 {% elif status_code == 403 %}
-    {% set icon, heading, text = "fa-lock", "Нет доступа", "У вас нет прав на просмотр этой страницы." %}
+    {% set icon_name, heading, text = "lock", "Нет доступа", "У вас нет прав на просмотр этой страницы." %}
 {% elif status_code == 404 %}
-    {% set icon, heading, text = "fa-magnifying-glass", "Страница не найдена", "Возможно, она была удалена или ссылка неверна." %}
+    {% set icon_name, heading, text = "search", "Страница не найдена", "Возможно, она была удалена или ссылка неверна." %}
 {% else %}
-    {% set icon, heading, text = "fa-triangle-exclamation", "Что-то пошло не так", "Попробуйте ещё раз чуть позже." %}
+    {% set icon_name, heading, text = "warning", "Что-то пошло не так", "Попробуйте ещё раз чуть позже." %}
 {% endif %}
 
 {% block title %}{{ heading }} · MeWe{% endblock %}
@@ -18,7 +19,7 @@
 
 {% block content %}
 <div class="error-page">
-    <div class="error-page-icon"><i class="fas {{ icon }}"></i></div>
+    <div class="error-page-icon">{{ icon(icon_name) }}</div>
     <h1 class="error-page-title">{{ heading }}</h1>
     <p class="error-page-text">{{ text }}</p>
     {% if status_code == 401 %}

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import icon %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -6,13 +7,13 @@
 <div id="events-page" data-create-url="{{ url_for('my_events.render_my_event_page') }}">
 <div class="events-toolbar">
 <div class="search-bar-container">
-    <div class="search-icon-left"><i class="fas fa-magnifying-glass" aria-hidden="true"></i></div>
+    <div class="search-icon-left">{{ icon('search') }}</div>
     <input type="text" class="search-input" id="searchInput" placeholder="Поиск по названию, месту, описанию" aria-label="Поиск мероприятий" enterkeyhint="search" autocomplete="off" />
     <button class="search-clear" id="searchClear" type="button" aria-label="Очистить поиск" hidden>
-        <i class="fas fa-xmark" aria-hidden="true"></i>
+        {{ icon('close') }}
     </button>
     <button class="categories-tab" id="categoriesTab" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Выбор категории">
-        <i class="fas fa-table-cells-large categories-icon" aria-hidden="true"></i>
+        {{ icon('grid_view', 'categories-icon') }}
         <span>Категории</span>
         <span class="categories-count" id="categoriesCount" hidden></span>
     </button>
@@ -35,16 +36,16 @@
     <div class="modal-overlay" data-modal-close></div>
     <div class="modal-content">
         <button class="modal-close" type="button" aria-label="Закрыть" data-modal-close>
-            <i class="fas fa-xmark" aria-hidden="true"></i>
+            {{ icon('close') }}
         </button>
         <h2 id="modalTitle">Категории</h2>
         <div class="categories-grid">
             {% for category in categories %}
             <button class="category-option" type="button" aria-pressed="false"
                     data-category-id="{{ category.id }}" data-category-name="{{ category.name }}">
-                <i class="fas {{ category.icon or 'fa-tag' }} category-option-icon" aria-hidden="true"></i>
+                {{ icon(category_icon(category.icon), 'category-option-icon') }}
                 <span class="category-option-name">{{ category.name }}</span>
-                <i class="fas fa-check category-option-check" aria-hidden="true"></i>
+                {{ icon('check', 'category-option-check') }}
             </button>
             {% endfor %}
         </div>

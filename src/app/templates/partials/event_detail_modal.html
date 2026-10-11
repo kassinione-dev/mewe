@@ -1,9 +1,10 @@
+{% from "macros.html" import icon %}
 {# Окно подробностей мероприятия; содержимое рисует static/js/components/event-detail.js #}
 <div class="modal event-detail-modal" id="eventDetailModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="eventDetailTitle">
     <div class="modal-overlay" data-modal-close></div>
     <div class="modal-content">
         <button class="modal-close" type="button" aria-label="Закрыть" data-modal-close>
-            <i class="fas fa-xmark" aria-hidden="true"></i>
+            {{ icon('close') }}
         </button>
         <div class="event-detail-body"></div>
     </div>

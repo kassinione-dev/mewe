@@ -379,8 +379,8 @@
     box-shadow: 0 4px 12px rgba(59, 99, 171, 0.3);
 }
 
-.new-event-btn i {
-    font-size: 18px;
+.new-event-btn .ms {
+    font-size: 26px;
 }
 
 @media (max-width: 768px) {

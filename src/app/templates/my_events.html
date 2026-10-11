@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import icon %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -37,7 +38,7 @@
 </section>
 <div class="create-hero">
     <button class="new-event-btn" aria-label="Создать мероприятие">
-        <i class="fas fa-plus" aria-hidden="true"></i>
+        {{ icon('add') }}
         <span class="new-event-label">Создать</span>
     </button>
 </div>
@@ -47,7 +48,7 @@
       data-min-duration="{{ min_event_duration_minutes }}"
       data-max-duration="{{ max_event_duration_minutes }}">
     <button class="modal-close" type="button" aria-label="Закрыть" data-modal-close>
-        <i class="fas fa-xmark" aria-hidden="true"></i>
+        {{ icon('close') }}
     </button>
     <h1 id="createEventTitle">Новое мероприятие</h1>
 

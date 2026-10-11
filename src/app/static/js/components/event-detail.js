@@ -24,7 +24,7 @@ function createOrganizer(event) {
 
   const hasProfile = event.creator_id !== null && event.creator_id !== undefined;
   return h('div', { className: 'meta-item event-organizer-meta' },
-    icon('fa-user', 'icon'),
+    icon('person', 'icon'),
     hasProfile
       ? h('a', {
         className: 'event-organizer-profile-link',

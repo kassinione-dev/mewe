@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import icon %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -32,7 +33,7 @@
             <div class="profile-names">
                 <h2 class="profile-name">{{ user.first_name }}{% if user.last_name %} {{ user.last_name }}{% endif %}</h2>
                 {% if role_label %}
-                <div class="profile-role"><i class="fas fa-shield-halved" aria-hidden="true"></i>{{ role_label }}</div>
+                <div class="profile-role">{{ icon('shield') }}{{ role_label }}</div>
                 {% endif %}
                 {% if user.username %}
                 <a class="profile-username" href="https://t.me/{{ user.username }}" target="_blank" rel="noopener">@{{ user.username }}</a>
@@ -42,19 +43,19 @@
 
         <dl class="profile-stats">
             <div class="profile-stat">
-                <dt><i class="fas fa-calendar-check icon"></i>Создано</dt>
+                <dt>{{ icon('event_available', 'icon') }}Создано</dt>
                 <dd>{{ user.events|length }}</dd>
             </div>
             <div class="profile-stat">
-                <dt><i class="fas fa-ticket icon"></i>Участвует</dt>
+                <dt>{{ icon('confirmation_number', 'icon') }}Участвует</dt>
                 <dd>{{ participation_count }}</dd>
             </div>
             <div class="profile-stat">
-                <dt><i class="fas fa-user-plus icon"></i>С нами с</dt>
+                <dt>{{ icon('person_add', 'icon') }}С нами с</dt>
                 <dd>{{ local_date(user.created_at) }}</dd>
             </div>
             <div class="profile-stat">
-                <dt><i class="fas fa-clock icon"></i>Последний вход</dt>
+                <dt>{{ icon('schedule', 'icon') }}Последний вход</dt>
                 <dd>{{ local_date(user.last_login_at) }}</dd>
             </div>
         </dl>
@@ -65,7 +66,7 @@
                 <span class="profile-label">О себе</span>
                 {% if is_own %}
                 <button class="profile-edit-btn" id="aboutEdit" type="button" aria-label="Редактировать описание">
-                    <i class="fas fa-pen"></i>Изменить
+                    {{ icon('edit') }}Изменить
                 </button>
                 {% endif %}
             </div>
@@ -89,13 +90,13 @@
             <span class="profile-label" id="themeLabel">Оформление</span>
             <div class="segmented" role="radiogroup" aria-labelledby="themeLabel" aria-describedby="themeHint" data-theme-switcher>
                 <button class="segmented-option" type="button" role="radio" aria-checked="false" data-theme-mode="auto">
-                    <i class="fas fa-circle-half-stroke" aria-hidden="true"></i>Авто
+                    {{ icon('contrast') }}Авто
                 </button>
                 <button class="segmented-option" type="button" role="radio" aria-checked="false" data-theme-mode="light">
-                    <i class="fas fa-sun" aria-hidden="true"></i>Светлая
+                    {{ icon('light_mode') }}Светлая
                 </button>
                 <button class="segmented-option" type="button" role="radio" aria-checked="false" data-theme-mode="dark">
-                    <i class="fas fa-moon" aria-hidden="true"></i>Тёмная
+                    {{ icon('dark_mode') }}Тёмная
                 </button>
             </div>
             <p class="profile-hint" id="themeHint">«Авто» — как в Telegram</p>

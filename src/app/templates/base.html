@@ -18,7 +18,9 @@
     <link href="{{ url_for('static', filename='css/components/event-detail.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/components/empty-state.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/components/footer.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="{{ icon_font_url }}">
     {# Стили страницы — после общих, чтобы их уточнять #}
     {% block styles %}{% endblock %}
     <link rel="icon" href="{{ url_for('static', filename='icons/favicon.ico') }}">
