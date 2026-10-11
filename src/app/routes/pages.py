@@ -11,7 +11,6 @@ from ..field_limits import (
     EVENT_TITLE_MAX_LENGTH,
     USER_ABOUT_MAX_LENGTH,
 )
-from ..models import Category
 from ..repositories.category_repository import get_all_categories
 from ..repositories.participant_repository import get_participation_count
 from ..repositories.user_repository import get_user_by_id
@@ -24,7 +23,7 @@ profile_bp = Blueprint("profile", __name__)
 
 @index_bp.route("/")
 def render_events_page():
-    categories = Category.query.with_entities(Category.id, Category.name, Category.icon).all()
+    categories = get_all_categories()
 
     return render_template(
         "index.html",
