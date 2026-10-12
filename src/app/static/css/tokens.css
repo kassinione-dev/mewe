@@ -25,6 +25,8 @@
   --accent-fill: var(--fefu-blue);
   --success: var(--boostrap-success);
   --danger:  var(--fefu-red);
+  /* --danger — текст и обводки; --danger-fill — заливка под белым текстом (как пара --accent) */
+  --danger-fill: var(--fefu-red);
 
   --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -46,4 +48,5 @@
 
   /* фирменный синий на тёмном фоне не читается, для текста и иконок осветляем */
   --accent: #8AADEB;
+  --danger: #EC7F8D;
 }

@@ -155,19 +155,20 @@
   padding: 0 20px;
 }
 
-/* Основное действие — как остальные основные кнопки (.btn) */
+/* Все действия в окне — кнопки с обводкой, различаются цветом:
+   «Записаться» — акцент, «Отменить запись» — нейтральная, «Удалить» — опасная */
 .event-detail-action-primary {
-  background: var(--accent-fill);
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
 }
 
-/* Второстепенное действие («Отменить запись») — нейтральная обводка, а не яркая заливка */
 .event-detail-action-secondary {
   border: 1px solid var(--border);
   background: transparent;
   color: var(--text-primary);
 }
 
-/* Удаление — не главное действие: обводка вместо заливки */
 .event-detail-action-danger {
   border: 1px solid var(--danger);
   background: transparent;
