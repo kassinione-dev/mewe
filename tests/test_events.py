@@ -56,6 +56,7 @@ def test_create_event_cooldown(client, user, make_category, query):
     response = client.post(EVENTS_URL, json=event_payload(category_id))
 
     assert response.status_code == 409
+    assert response.json == {"error": "you can create a new event in 5 min"}
     assert query(count_events()) == 1
 
 

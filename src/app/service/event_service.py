@@ -1,3 +1,4 @@
+import math
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -36,12 +37,13 @@ def create_event(user_id: int, payload: dict[str, Any]) -> Event:
     now = datetime.now(UTC)
 
     if user.last_event_create_at:
-        elapsed = now - user.last_event_create_at
-        if elapsed < timedelta(minutes=EVENT_CREATE_COOLDOWN_MINUTES):
-            raise ConflictError(
-                f"You can create a new event in {EVENT_CREATE_COOLDOWN_MINUTES} minutes"
-            )
-
+        next_allowed_at = user.last_event_create_at + timedelta(minutes=EVENT_CREATE_COOLDOWN_MINUTES)
+        if now < next_allowed_at:
+            # DATETIME в MySQL округляет время записи до секунды, и оно может оказаться
+            # в будущем на долю секунды — отбрасываем её, иначе вместо 5 мин выйдет 6
+            seconds_left = int((next_allowed_at - now).total_seconds())
+            minutes_left = max(1, math.ceil(seconds_left / 60))
+            raise ConflictError(f"you can create a new event in {minutes_left} min")
 
     data = validate_create_event_payload(payload)
 
