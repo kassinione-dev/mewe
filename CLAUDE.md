@@ -93,7 +93,7 @@ templates/partials/       разметка, общая для нескольки
 - Тема: `static/js/boot/theme.js` (в `<head>`, до отрисовки) ставит `data-theme` и красит шапку Telegram;
   режим `auto`/`light`/`dark` хранится в `localStorage` и Telegram `CloudStorage`. Интерфейс к ней —
   `window.MeWeTheme`, переключатель — в своём профиле (`components/theme-switcher.js`).
-- Цвета темы Telegram (`themeParams`) не используем — только своя палитра в `static/css/common.css`.
+- Цвета темы Telegram (`themeParams`) не используем — только своя палитра в `static/css/tokens.css`.
 - `--accent` — текст, иконки, обводки; `--accent-fill` — заливка под белым текстом.
 
 ## Как работаем

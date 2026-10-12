@@ -33,10 +33,10 @@
   outline: none;
 }
 
+/* Категория слева, дата справа — всегда в одну строку, чтобы дата стояла на одном месте во всех карточках */
 .event-header {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px 12px;
+  gap: 12px;
   justify-content: space-between;
   align-items: center;
   padding: 14px 20px;
@@ -47,6 +47,7 @@
 }
 
 .event-category {
+  min-width: 0;
   background-color: var(--bg-accent-soft);
   padding: 5px 12px;
   border-radius: 20px;
@@ -56,11 +57,19 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+}
+
+/* Если вместе с датой не помещается, сжимается категория, а не дата */
+.event-category-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .event-date {
+  flex-shrink: 0;
+  white-space: nowrap;
   font-size: 14px;
   color: var(--text-secondary);
   font-weight: 500;

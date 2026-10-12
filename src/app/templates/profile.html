@@ -88,8 +88,8 @@
         {% if is_own %}
         <div class="profile-section">
             <span class="profile-label" id="themeLabel">Оформление</span>
-            <div class="segmented" role="radiogroup" aria-labelledby="themeLabel" aria-describedby="themeHint" data-theme-switcher>
-                <button class="segmented-option" type="button" role="radio" aria-checked="false" data-theme-mode="auto">
+            <div class="segmented" role="radiogroup" aria-labelledby="themeLabel" data-theme-switcher>
+                <button class="segmented-option" type="button" role="radio" aria-checked="false" data-theme-mode="auto" title="Как в Telegram">
                     {{ icon('contrast') }}Авто
                 </button>
                 <button class="segmented-option" type="button" role="radio" aria-checked="false" data-theme-mode="light">
@@ -99,7 +99,6 @@
                     {{ icon('dark_mode') }}Тёмная
                 </button>
             </div>
-            <p class="profile-hint" id="themeHint">«Авто» — как в Telegram</p>
         </div>
         {% endif %}
     </div>

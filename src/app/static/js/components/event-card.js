@@ -6,7 +6,7 @@ import { formatDuration, formatEventDate, isEventPast, spotsLeftLabel } from '..
 export function createCategoryBadge(event) {
   return h('div', { className: 'event-category' },
     icon(event.category_icon || 'label'),
-    event.category_name || 'Без категории'
+    h('span', { className: 'event-category-name', text: event.category_name || 'Без категории' })
   );
 }
 

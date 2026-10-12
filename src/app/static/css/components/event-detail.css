@@ -159,8 +159,11 @@
   background: var(--success);
 }
 
+/* Второстепенное действие («Отменить запись») — нейтральная обводка, а не яркая заливка */
 .event-detail-action-secondary {
-  background: var(--text-secondary);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-primary);
 }
 
 /* Удаление — не главное действие: обводка вместо заливки */
