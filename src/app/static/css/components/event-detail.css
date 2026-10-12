@@ -155,8 +155,9 @@
   padding: 0 20px;
 }
 
+/* Основное действие — как остальные основные кнопки (.btn) */
 .event-detail-action-primary {
-  background: var(--success);
+  background: var(--accent-fill);
 }
 
 /* Второстепенное действие («Отменить запись») — нейтральная обводка, а не яркая заливка */
