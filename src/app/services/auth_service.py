@@ -7,10 +7,10 @@ from ..exceptions import InvalidInitDataError, ValidationError
 from ..extensions import db
 from ..models import User
 from ..repositories.user_repository import get_user_by_telegram_id
-from ..schemas.auth_schema import validate_init_data
+from .telegram_auth import validate_init_data
 
 
-def auth_or_create_user(payload: dict[str, Any]) -> User:
+def authenticate(payload: dict[str, Any]) -> User:
     bot_token = current_app.config["BOT_TOKEN"]
     init_data = payload.get("initData")
     if not isinstance(init_data, str):

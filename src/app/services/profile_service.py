@@ -4,7 +4,7 @@ from ..exceptions import NotFoundError, ValidationError
 from ..extensions import db
 from ..field_limits import USER_ABOUT_MAX_LENGTH
 from ..models import User
-from ..repositories.participant_repository import get_participation_count
+from ..repositories.participant_repository import count_participations
 from ..repositories.user_repository import get_user_by_id
 
 
@@ -14,10 +14,10 @@ def get_profile(user_id: int) -> tuple[User, int]:
     if user is None:
         raise NotFoundError("user not found")
 
-    return user, get_participation_count(user.id)
+    return user, count_participations(user.id)
 
 
-def change_about_user(user_id: int, payload: dict[str, Any]) -> str:
+def update_about(user_id: int, payload: dict[str, Any]) -> str:
     about_value = payload.get("about", "")
 
     if not isinstance(about_value, str):

@@ -15,7 +15,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link event-btn{% if ep.startswith('my_events.') %} active{% endif %}"
-                   href="{{ url_for('my_events.render_my_event_page') }}"
+                   href="{{ url_for('my_events.render_my_events_page') }}"
                    {% if ep.startswith('my_events.') %}aria-current="page"{% endif %}>
                     <span class="nav-icon-wrap">
                         {{ icon('event', 'nav-icon') }}

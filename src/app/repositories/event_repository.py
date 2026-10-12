@@ -20,14 +20,14 @@ def get_event_for_update(event_id: int) -> Event | None:
     return db.session.scalars(statement).one_or_none()
 
 
-def get_events_by_user(user_id: int) -> list[Event]:
+def get_events_by_creator(creator_id: int) -> list[Event]:
     events = (
         Event.query
         .options(
             joinedload(Event.creator),  # pyright: ignore[reportArgumentType]
             joinedload(Event.category),  # pyright: ignore[reportArgumentType]
         )
-        .filter(Event.creator_id == user_id)
+        .filter(Event.creator_id == creator_id)
         .order_by(Event.event_date.desc())
         .all()
     )

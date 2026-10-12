@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 import pytest
 
 from src.app.exceptions import InvalidInitDataError
-from src.app.schemas.auth_schema import validate_init_data
+from src.app.services.telegram_auth import validate_init_data
 
 BOT_TOKEN = "123456:test-token"
 USER = {"id": 42, "first_name": "Лев", "username": "lev"}

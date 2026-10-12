@@ -1,6 +1,6 @@
 from sqlalchemy.exc import OperationalError
 
-from src.app.service import health_service
+from src.app.services import health_service
 
 
 def test_health(client):

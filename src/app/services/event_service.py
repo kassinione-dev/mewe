@@ -10,13 +10,13 @@ from ..repositories.event_repository import (
     find_public_events,
     get_event_by_id,
     get_event_for_update,
+    get_events_by_creator,
     get_events_by_participant,
-    get_events_by_user,
 )
 from ..repositories.participant_repository import (
+    count_participants,
+    count_participants_by_event,
     get_participant,
-    get_registered_count,
-    get_registered_counts,
     is_user_registered,
 )
 from ..repositories.user_repository import get_user_for_update
@@ -73,7 +73,7 @@ def get_categories() -> list[Category]:
 
 
 def _with_registered_counts(events: list[Event]) -> list[tuple[Event, int]]:
-    registered_counts = get_registered_counts([event.id for event in events])
+    registered_counts = count_participants_by_event([event.id for event in events])
 
     return [(event, registered_counts.get(event.id, 0)) for event in events]
 
@@ -100,14 +100,14 @@ def get_public_events(
 
 
 def get_created_events(user_id: int) -> list[tuple[Event, int]]:
-    return _with_registered_counts(get_events_by_user(user_id))
+    return _with_registered_counts(get_events_by_creator(user_id))
 
 
 def get_participating_events(user_id: int) -> list[tuple[Event, int]]:
     return _with_registered_counts(get_events_by_participant(user_id))
 
 
-def get_participant_status_service(user_id: int, event_id: int) -> tuple[bool, bool, int]:
+def get_participation_status(user_id: int, event_id: int) -> tuple[bool, bool, int]:
     event = get_event_by_id(event_id)
 
     if event is None:
@@ -115,7 +115,7 @@ def get_participant_status_service(user_id: int, event_id: int) -> tuple[bool, b
 
     is_creator = event.creator_id == user_id
     is_registered = is_user_registered(user_id, event_id)
-    registered_count = get_registered_count(event_id)
+    registered_count = count_participants(event_id)
 
     return is_creator, is_registered, registered_count
 
@@ -134,9 +134,9 @@ def join_event(user_id: int, event_id: int) -> tuple[Participant, int, bool]:
 
     participant = get_participant(user_id, event_id)
     if participant:
-        return participant, get_registered_count(event_id), False
+        return participant, count_participants(event_id), False
 
-    if get_registered_count(event_id) >= event.max_participants:
+    if count_participants(event_id) >= event.max_participants:
         raise ConflictError("event is full")
 
     participant = Participant(
@@ -146,7 +146,7 @@ def join_event(user_id: int, event_id: int) -> tuple[Participant, int, bool]:
     db.session.add(participant)
     db.session.flush()
 
-    registered_count = get_registered_count(event_id)
+    registered_count = count_participants(event_id)
     db.session.commit()
 
     return participant, registered_count, True
@@ -164,12 +164,12 @@ def leave_event(user_id: int, event_id: int) -> int:
     participant = get_participant(user_id, event_id)
 
     if participant is None:
-        return get_registered_count(event_id)
+        return count_participants(event_id)
 
     db.session.delete(participant)
     db.session.flush()
 
-    registered_count = get_registered_count(event_id)
+    registered_count = count_participants(event_id)
     db.session.commit()
 
     return registered_count

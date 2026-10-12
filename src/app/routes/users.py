@@ -3,16 +3,15 @@ from flask import Blueprint, jsonify, request
 from ..auth import get_current_user_id, login_required
 from ..exceptions import ValidationError
 from ..serializers.event_serializer import serialize_event
-from ..service.event_service import get_created_events, get_participating_events
-from ..service.profile_service import change_about_user
+from ..services import event_service, profile_service
 
-users_bp = Blueprint("users", __name__)
+users_bp = Blueprint("users", __name__, url_prefix="/api/users")
 
 
-@users_bp.route("/api/users/me/events")
+@users_bp.route("/me/events")
 @login_required
-def get_my_events():
-    events = get_created_events(get_current_user_id())
+def list_my_events():
+    events = event_service.get_created_events(get_current_user_id())
     data = {
         "events": [
             serialize_event(event, registered_count)
@@ -23,10 +22,10 @@ def get_my_events():
     return jsonify(data), 200
 
 
-@users_bp.route("/api/users/me/participations")
+@users_bp.route("/me/participations")
 @login_required
-def get_my_participating_events():
-    events = get_participating_events(get_current_user_id())
+def list_my_participations():
+    events = event_service.get_participating_events(get_current_user_id())
     data = {
         "events": [
             serialize_event(event, registered_count)
@@ -36,7 +35,8 @@ def get_my_participating_events():
 
     return jsonify(data), 200
 
-@users_bp.route("/api/users/me", methods=["PATCH"])
+
+@users_bp.route("/me", methods=["PATCH"])
 @login_required
 def update_about():
     payload = request.get_json(silent=True)
@@ -45,7 +45,7 @@ def update_about():
     if not isinstance(payload, dict):
         raise ValidationError("invalid JSON body")
 
-    about = change_about_user(user_id, payload)
+    about = profile_service.update_about(user_id, payload)
     data = {
         "about": about
     }

@@ -3,19 +3,19 @@ from flask import Blueprint, jsonify, request
 from ..auth import login_user
 from ..exceptions import ValidationError
 from ..serializers.user_serializer import serialize_private_user
-from ..service.auth_service import auth_or_create_user
+from ..services import auth_service
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api")
 
 
 @auth_bp.route("/sessions", methods=["POST"])
-def auth_user_data():
+def create_session():
     payload = request.get_json(silent=True)
 
     if not isinstance(payload, dict):
         raise ValidationError("invalid JSON body")
 
-    user = auth_or_create_user(payload)
+    user = auth_service.authenticate(payload)
     login_user(user)
     data = {
         "user": serialize_private_user(user)

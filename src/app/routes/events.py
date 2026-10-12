@@ -4,21 +4,13 @@ from ..auth import get_current_user_id, login_required
 from ..exceptions import ValidationError
 from ..serializers.event_serializer import serialize_event
 from ..serializers.participant_serializer import serialize_participant
-from ..service.event_service import (
-    EVENTS_PER_PAGE_DEFAULT,
-    delete_event,
-    get_participant_status_service,
-    get_public_events,
-)
-from ..service.event_service import create_event as create_event_service
-from ..service.event_service import join_event as join_event_service
-from ..service.event_service import leave_event as leave_event_service
+from ..services import event_service
 
-events_bp = Blueprint("events", __name__)
+events_bp = Blueprint("events", __name__, url_prefix="/api/events")
 
 
-@events_bp.route("/api/events")
-def get_events():
+@events_bp.route("")
+def list_events():
     search = request.args.get("search", "").strip()
     category_values = request.args.getlist("category")
     try:
@@ -30,9 +22,9 @@ def get_events():
         raise ValidationError("category IDs must be positive integers")
 
     page = request.args.get("page", 1, type=int)
-    per_page = request.args.get("per_page", EVENTS_PER_PAGE_DEFAULT, type=int)
+    per_page = request.args.get("per_page", event_service.EVENTS_PER_PAGE_DEFAULT, type=int)
 
-    events_page = get_public_events(search, category_ids or None, page, per_page)
+    events_page = event_service.get_public_events(search, category_ids or None, page, per_page)
     data = {
         "events": [
             serialize_event(event, registered_count)
@@ -49,7 +41,7 @@ def get_events():
     return jsonify(data), 200
 
 
-@events_bp.route("/api/events", methods=["POST"])
+@events_bp.route("", methods=["POST"])
 @login_required
 def create_event():
     payload = request.get_json(silent=True)
@@ -57,26 +49,28 @@ def create_event():
     if not isinstance(payload, dict):
         raise ValidationError("invalid JSON body")
 
-    event = create_event_service(get_current_user_id(), payload)
+    event = event_service.create_event(get_current_user_id(), payload)
     data = serialize_event(event)
 
     return jsonify(data), 201
 
 
-@events_bp.route("/api/events/<int:event_id>", methods=["DELETE"])
+@events_bp.route("/<int:event_id>", methods=["DELETE"])
 @login_required
-def delete_my_event(event_id: int):
-    delete_event(get_current_user_id(), event_id)
+def delete_event(event_id: int):
+    event_service.delete_event(get_current_user_id(), event_id)
 
     return "", 204
 
 
-@events_bp.route("/api/events/<int:event_id>/participants/me", methods=["GET"])
+@events_bp.route("/<int:event_id>/participants/me", methods=["GET"])
 @login_required
-def get_participant_status(event_id: int):
+def get_participation_status(event_id: int):
     user_id = get_current_user_id()
 
-    is_creator, is_registered, registered_count = get_participant_status_service(user_id, event_id)
+    is_creator, is_registered, registered_count = event_service.get_participation_status(
+        user_id, event_id
+    )
     data = {
         "is_creator": is_creator,
         "is_registered": is_registered,
@@ -86,11 +80,11 @@ def get_participant_status(event_id: int):
     return jsonify(data), 200
 
 
-@events_bp.route("/api/events/<int:event_id>/participants/me", methods=["PUT"])
+@events_bp.route("/<int:event_id>/participants/me", methods=["PUT"])
 @login_required
 def join_event(event_id: int):
     user_id = get_current_user_id()
-    participant, registered_count, created = join_event_service(user_id, event_id)
+    participant, registered_count, created = event_service.join_event(user_id, event_id)
     data = {
         "participant": serialize_participant(participant),
         "registered_count": registered_count
@@ -99,11 +93,11 @@ def join_event(event_id: int):
     return jsonify(data), 201 if created else 200
 
 
-@events_bp.route("/api/events/<int:event_id>/participants/me", methods=["DELETE"])
+@events_bp.route("/<int:event_id>/participants/me", methods=["DELETE"])
 @login_required
 def leave_event(event_id: int):
     user_id = get_current_user_id()
-    registered_count = leave_event_service(user_id, event_id)
+    registered_count = event_service.leave_event(user_id, event_id)
     data = {
         "registered_count": registered_count
     }

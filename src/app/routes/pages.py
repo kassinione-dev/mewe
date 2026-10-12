@@ -11,8 +11,7 @@ from ..field_limits import (
     EVENT_TITLE_MAX_LENGTH,
     USER_ABOUT_MAX_LENGTH,
 )
-from ..service.event_service import get_categories
-from ..service.profile_service import get_profile
+from ..services import event_service, profile_service
 
 index_bp = Blueprint("index", __name__)
 my_events_bp = Blueprint("my_events", __name__)
@@ -21,7 +20,7 @@ profile_bp = Blueprint("profile", __name__)
 
 @index_bp.route("/")
 def render_events_page():
-    categories = get_categories()
+    categories = event_service.get_categories()
 
     return render_template(
         "index.html",
@@ -31,8 +30,8 @@ def render_events_page():
 
 
 @my_events_bp.route("/my_events")
-def render_my_event_page():
-    categories = get_categories()
+def render_my_events_page():
+    categories = event_service.get_categories()
 
     return render_template(
         "my_events.html",
@@ -49,7 +48,7 @@ def render_my_event_page():
 
 
 def _render_profile(user_id: int):
-    user, participation_count = get_profile(user_id)
+    user, participation_count = profile_service.get_profile(user_id)
 
     return render_template(
         "profile.html",
