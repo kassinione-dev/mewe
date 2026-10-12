@@ -18,6 +18,7 @@ MeWe is a Telegram Mini App for discovering and organizing student activities at
 ## Tech stack
 
 - Python 3.12, Flask, and Jinja2
+- pytest and GitHub Actions CI
 - Gunicorn WSGI server for the containerized web app
 - Flask-SQLAlchemy and MySQL 8.4
 - Alembic database migrations
@@ -131,6 +132,28 @@ The JSON API is under `/api`. Successful responses are unwrapped JSON objects un
 | `PATCH` | `/api/users/me` | Update the profile description |
 
 State-changing API requests must come from the configured `APP_ORIGIN`. The browser sends the same-origin session cookie automatically.
+
+## Tests
+
+Tests use pytest and a real MySQL 8.4 database: row locks and the UTC column type behave differently on SQLite. The schema is built by the Alembic migrations, and tables are truncated after every test.
+
+```bash
+docker run -d --name mewe-test-db -p 127.0.0.1:3307:3306 \
+  -e MYSQL_ROOT_PASSWORD=test -e MYSQL_DATABASE=mewe_test mysql:8.4
+uv run pytest
+```
+
+Set `TEST_DATABASE_URL` to use another database; its name must end with `_test`.
+
+## CI/CD
+
+GitHub Actions runs on every pull request and push to `main`:
+
+- `ruff` lint
+- migration checks on a temporary MySQL: a single head, `upgrade` → `downgrade base` → `upgrade`, and `alembic check` for models without a migration
+- the pytest suite
+
+A push to `main` deploys to the server only after CI passes. The deploy backs up the database with `mysqldump` (the last 10 dumps are kept) before applying migrations.
 
 ## Database migrations
 
