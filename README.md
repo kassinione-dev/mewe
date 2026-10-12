@@ -12,21 +12,38 @@ MeWe is a Telegram Mini App for discovering and organizing student activities at
 - Delete an event as its organizer, before it starts
 - View created events and joined events separately on **My events**, with past events in collapsible lists
 - Authenticate through Telegram Web App `initData`; no separate password is needed
-- Edit the profile description
-- Adapt the interface to the Telegram client's light or dark theme
+- Edit the profile description and view other users' profiles
+- Choose a light, dark, or Telegram-matching theme; the choice syncs across devices through Telegram CloudStorage
 
 ## Tech stack
 
-- Python 3.12, Flask, and Jinja2
-- pytest, pyright, and GitHub Actions CI
-- Gunicorn WSGI server for the containerized web app
-- SQLAlchemy 2.0 typed models (via Flask-SQLAlchemy) and MySQL 8.4
-- Pydantic for request validation
-- Alembic database migrations
-- `python-telegram-bot` for the Telegram bot
-- Vanilla JavaScript and CSS; the frontend has no build step
-- Docker Compose for the web app, bot, and database
-- `uv` for Python dependency management
+- **Backend:** Python 3.12, Flask, Pydantic, SQLAlchemy 2.0 typed models (via Flask-SQLAlchemy), Alembic, Gunicorn
+- **Database:** MySQL 8.4
+- **Bot:** `python-telegram-bot`
+- **Frontend:** Jinja2 templates, vanilla JavaScript ES modules, and CSS; no build step
+- **Quality:** pytest on a real MySQL database, pyright in strict mode, ruff
+- **Infrastructure:** Docker Compose, GitHub Actions CI/CD, `uv` for dependency management
+
+## Architecture
+
+The backend is split into layers; each layer depends only on the one below it:
+
+```text
+routes/        HTTP: parse the request, call a service, serialize the response
+  ↓
+services/      business rules and transactions (commit); know nothing about HTTP
+  ↓
+repositories/  database queries only: select() statements, no rules, no commit
+  ↓
+models.py      SQLAlchemy 2.0 models with Mapped[...] types
+```
+
+- **Validation at the boundary.** A route parses the JSON body into a Pydantic schema (`schemas/`) with strict types, length limits, and timezone-aware dates, and passes the typed object to a service. Rules that need the clock or the database (the event starts in the future, the category exists, the creation cooldown) live in services.
+- **Errors.** Client errors are subclasses of `AppError` (`ValidationError` → 400, `ConflictError` → 409, and so on). API requests get `{"error": "message"}`; HTML pages get an error page.
+- **Authentication.** The Mini App sends Telegram `initData`; the backend verifies its HMAC-SHA256 signature with the bot token and its age, then creates a session.
+- **Concurrency.** Registration locks the event row with `SELECT ... FOR UPDATE`, so two users cannot take the last place at the same time.
+- **Time.** All dates are stored and processed in UTC through a custom column type that rejects naive datetimes; the client formats dates for the user's timezone.
+- **Request origin.** The session cookie must be `SameSite=None` inside Telegram, so state-changing API requests are accepted only from `APP_ORIGIN`.
 
 ## Application layout
 
@@ -34,11 +51,14 @@ MeWe is a Telegram Mini App for discovering and organizing student activities at
 ├── bot.py                 # Telegram /start command and Mini App menu button
 ├── run.py                 # Flask web server entry point
 ├── docker-compose.yml     # web, bot, and MySQL services
+├── .github/workflows/     # CI checks and deployment
 ├── migrations/            # Alembic migrations
 ├── tests/                 # pytest suite (needs a MySQL test database)
 └── src/app/
     ├── models.py          # Category, Event, User, and Participant models
-    ├── routes/            # Authentication, events, participations, and profile
+    ├── db_types.py        # UTC datetime column type
+    ├── exceptions.py      # AppError hierarchy mapped to HTTP status codes
+    ├── routes/            # API endpoints, HTML pages, and the health check
     ├── services/          # Business rules and Telegram initData verification
     ├── repositories/      # Database queries
     ├── schemas/           # Pydantic request schemas
@@ -68,7 +88,7 @@ FLASK_DEBUG=false
 
 `WEBAPP_URL` is the public HTTPS URL opened by Telegram. `APP_ORIGIN` must be the exact origin of that page (scheme and host, with no path); the backend checks it for state-changing API requests. Flask session cookies are secure and partitioned, so the Mini App must be served over HTTPS.
 
-Docker Compose builds `DATABASE_URL` for the web and bot containers from `DB_PASSWORD` and the Compose database service. When running the app outside Docker, configure `DATABASE_URL` to point to a reachable MySQL database, for example:
+Docker Compose builds `DATABASE_URL` for the web and bot containers from `DB_PASSWORD` and the Compose database service. When running the app outside Docker, `DATABASE_URL` is required and must point to a reachable MySQL database, for example:
 
 ```text
 mysql+pymysql://mewe:password@localhost/mewe_app
@@ -86,7 +106,7 @@ docker compose run --rm web alembic upgrade head
 docker compose up -d
 ```
 
-The web and bot services wait for MySQL's health check. The web app runs under Gunicorn with two workers. `PORT` sets both the port Gunicorn listens on inside the container and the published host port. `WEB_BIND` sets the host address; by default, Compose publishes the app only on `127.0.0.1:8000`, ready for a local HTTPS reverse proxy. `FLASK_DEBUG` applies to the local `run.py` server and does not enable debug mode in the Gunicorn deployment. To inspect service output:
+The web and bot services wait for MySQL's health check, and the web container reports its own health through `/api/health`. The web app runs under Gunicorn with two workers. `PORT` sets both the port Gunicorn listens on inside the container and the published host port. `WEB_BIND` sets the host address; by default, Compose publishes the app only on `127.0.0.1:8000`, ready for a local HTTPS reverse proxy. `FLASK_DEBUG` applies to the local `run.py` server and does not enable debug mode in the Gunicorn deployment. To inspect service output:
 
 ```bash
 docker compose logs -f web bot
@@ -118,18 +138,19 @@ HTML pages:
 
 - `/` — upcoming events, search, multi-category filters, and event details
 - `/my_events` — events the current user organizes and events they have joined
-- `/profile` — user profile and editable description
+- `/profile` — the current user's profile, editable description, and theme switcher
+- `/{id}/profile` — another user's public profile
 
-The JSON API is under `/api`. Successful responses are unwrapped JSON objects unless the endpoint returns `204 No Content`; errors use `{"error": "message"}`. Protected endpoints use the Flask session cookie.
+The JSON API is under `/api`. Successful responses are unwrapped JSON objects; deleting an event returns `204 No Content`. Errors use `{"error": "message"}`; a validation error names the field, for example `{"error": "title: String should have at least 1 character"}`. Protected endpoints use the Flask session cookie.
 
 | Method | Endpoint | Purpose |
 |---|---|---|
 | `GET` | `/api/health` | Check that the app and its database respond; used by the Compose healthcheck |
 | `POST` | `/api/sessions` | Validate Telegram `initData` and create a session |
-| `GET` | `/api/events` | Search and filter upcoming events; repeat `category` for multiple IDs |
+| `GET` | `/api/events` | Search and filter upcoming events; repeat `category` for multiple IDs; paginate with `page` and `per_page` (default 15, max 100) |
 | `POST` | `/api/events` | Create an event |
 | `GET` | `/api/events/{id}/participants/me` | Get the current user's participation status |
-| `PUT` / `DELETE` | `/api/events/{id}/participants/me` | Register for an event or cancel registration |
+| `PUT` / `DELETE` | `/api/events/{id}/participants/me` | Register for an event or cancel registration; both are idempotent and return the new `registered_count` |
 | `DELETE` | `/api/events/{id}` | Delete an event as its organizer |
 | `GET` | `/api/users/me/events` | List events organized by the current user |
 | `GET` | `/api/users/me/participations` | List events joined by the current user, including past events |
@@ -139,25 +160,46 @@ State-changing API requests must come from the configured `APP_ORIGIN`. The brow
 
 ## Tests
 
-Tests use pytest and a real MySQL 8.4 database: row locks and the UTC column type behave differently on SQLite. The schema is built by the Alembic migrations, and tables are truncated after every test.
+Tests use pytest and a real MySQL database: row locks and the UTC column type behave differently on SQLite. The schema is built by the Alembic migrations, and tables are truncated after every test.
 
 ```bash
 docker run -d --name mewe-test-db -p 127.0.0.1:3307:3306 \
-  -e MYSQL_ROOT_PASSWORD=test -e MYSQL_DATABASE=mewe_test mysql:8.4
+  -e MYSQL_ROOT_PASSWORD=test -e MYSQL_DATABASE=mewe_test mysql:8.4.11
 uv run pytest
 ```
 
-Set `TEST_DATABASE_URL` to use another database; its name must end with `_test`.
+Set `TEST_DATABASE_URL` to use another database; its name must end with `_test`, so the suite can never truncate a real database.
+
+The suite covers:
+
+- Telegram `initData` verification: a valid signature, tampered data, a signature from another bot, expired and future `auth_date`, and malformed user data
+- sessions: first login creates a user, a repeat login updates it, forged data is rejected
+- events: creation, validation errors, the creation cooldown, deletion rules, search with escaped `LIKE` wildcards, and hiding started events
+- participation: joining, leaving, idempotency, a full event, the organizer's own event, and events that have already started
+- API protection: requests without a session and from a foreign `Origin`
+- profile updates, the health check, and rendering of the HTML pages
+
+## Development checks
+
+Run before committing; CI runs the same checks:
+
+```bash
+uvx ruff check src tests
+uv run pyright
+uv run pytest
+```
+
+`pyright` checks `src` and `bot.py` in strict mode and `tests` in standard mode.
 
 ## CI/CD
 
-GitHub Actions runs on every pull request and push to `main`:
+GitHub Actions runs three jobs on every pull request and push to `main`:
 
-- `ruff` lint and `pyright` type check
-- migration checks on a temporary MySQL: a single head, `upgrade` → `downgrade base` → `upgrade`, and `alembic check` for models without a migration
-- the pytest suite
+- **lint:** `ruff`
+- **typecheck:** `pyright`
+- **test:** on a temporary MySQL service container, checks that migrations have a single head, runs `upgrade` → `downgrade base` → `upgrade`, runs `alembic check` to catch model changes without a migration, and then runs the pytest suite
 
-A push to `main` deploys to the server only after CI passes. The deploy backs up the database with `mysqldump` (the last 10 dumps are kept) before applying migrations.
+A push to `main` deploys to the server only after CI passes, and the deploy checks out the exact commit that passed. It backs up the database with `mysqldump` (the last 10 dumps are kept) before applying migrations. Docker image versions are pinned, so CI and the server run the same MySQL.
 
 ## Database migrations
 
