@@ -326,9 +326,10 @@
     white-space: nowrap;
 }
 
-/* галочка не занимает место, пока категория не выбрана: длинным названиям нужна вся ширина */
+/* Место под галочку есть всегда, она лишь невидима — иначе плитка при выборе становится шире
+   и может перескочить на целую строку */
 .category-option-check {
-    display: none;
+    visibility: hidden;
     font-size: 18px;
     color: var(--accent);
 }
@@ -339,7 +340,7 @@
 }
 
 .category-option[aria-pressed="true"] .category-option-check {
-    display: inline-block;
+    visibility: visible;
 }
 
 .categories-footer {
