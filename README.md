@@ -18,9 +18,9 @@ MeWe is a Telegram Mini App for discovering and organizing student activities at
 ## Tech stack
 
 - Python 3.12, Flask, and Jinja2
-- pytest and GitHub Actions CI
+- pytest, pyright, and GitHub Actions CI
 - Gunicorn WSGI server for the containerized web app
-- Flask-SQLAlchemy and MySQL 8.4
+- SQLAlchemy 2.0 typed models (via Flask-SQLAlchemy) and MySQL 8.4
 - Pydantic for request validation
 - Alembic database migrations
 - `python-telegram-bot` for the Telegram bot
@@ -153,7 +153,7 @@ Set `TEST_DATABASE_URL` to use another database; its name must end with `_test`.
 
 GitHub Actions runs on every pull request and push to `main`:
 
-- `ruff` lint
+- `ruff` lint and `pyright` type check
 - migration checks on a temporary MySQL: a single head, `upgrade` → `downgrade base` → `upgrade`, and `alembic check` for models without a migration
 - the pytest suite
 
