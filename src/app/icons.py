@@ -16,7 +16,7 @@ UI_ICONS = frozenset({
 
 # Значения categories.icon в БД
 CATEGORY_ICONS = frozenset({
-    "hiking", "menu_book", "music_note", "palette", "school", "science",
+    "celebration", "hiking", "menu_book", "music_note", "palette", "school", "science",
     "sports_esports", "sports_soccer",
 })
 
