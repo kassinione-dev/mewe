@@ -39,3 +39,8 @@ class NotFoundError(AppError):
 class ConflictError(AppError):
     status_code = 409
     message = "conflict error"
+
+
+class ServiceUnavailableError(AppError):
+    status_code = 503
+    message = "service unavailable"

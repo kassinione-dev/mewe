@@ -121,6 +121,7 @@ The JSON API is under `/api`. Successful responses are unwrapped JSON objects un
 
 | Method | Endpoint | Purpose |
 |---|---|---|
+| `GET` | `/api/health` | Check that the app and its database respond; used by the Compose healthcheck |
 | `POST` | `/api/sessions` | Validate Telegram `initData` and create a session |
 | `GET` | `/api/events` | Search and filter upcoming events; repeat `category` for multiple IDs |
 | `POST` | `/api/events` | Create an event |

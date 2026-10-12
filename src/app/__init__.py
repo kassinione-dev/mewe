@@ -60,6 +60,9 @@ def create_app():
             raise ForbiddenError("untrusted request origin")
 
 
+    from .routes.health import health_bp
+    app.register_blueprint(health_bp)
+
     from .routes.auth import auth_bp
     app.register_blueprint(auth_bp)
 
