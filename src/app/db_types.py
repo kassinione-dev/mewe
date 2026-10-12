@@ -4,7 +4,7 @@ from sqlalchemy.engine import Dialect
 from sqlalchemy.types import DateTime, TypeDecorator
 
 
-class UTCDateTime(TypeDecorator):
+class UTCDateTime(TypeDecorator[datetime]):
     impl = DateTime
     cache_ok = True
 

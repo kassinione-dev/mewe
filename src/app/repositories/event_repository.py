@@ -1,10 +1,13 @@
 from datetime import UTC, datetime
 
-from sqlalchemy import or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import joinedload
 
 from ..extensions import db
 from ..models import Event, Participant
+
+# Карточке события нужны организатор и категория — грузим их тем же запросом, без N+1
+_WITH_CREATOR_AND_CATEGORY = (joinedload(Event.creator), joinedload(Event.category))
 
 
 def get_event_by_id(event_id: int) -> Event | None:
@@ -21,63 +24,57 @@ def get_event_for_update(event_id: int) -> Event | None:
 
 
 def get_events_by_creator(creator_id: int) -> list[Event]:
-    events = (
-        Event.query
-        .options(
-            joinedload(Event.creator),  # pyright: ignore[reportArgumentType]
-            joinedload(Event.category),  # pyright: ignore[reportArgumentType]
-        )
-        .filter(Event.creator_id == creator_id)
+    statement = (
+        select(Event)
+        .options(*_WITH_CREATOR_AND_CATEGORY)
+        .where(Event.creator_id == creator_id)
         .order_by(Event.event_date.desc())
-        .all()
     )
 
-    return events
+    return list(db.session.scalars(statement))
 
 
 def get_events_by_participant(user_id: int) -> list[Event]:
-    events = (
-        Event.query
+    statement = (
+        select(Event)
         .join(Participant, Participant.event_id == Event.id)
-        .options(
-            joinedload(Event.creator),  # pyright: ignore[reportArgumentType]
-            joinedload(Event.category),  # pyright: ignore[reportArgumentType]
-        )
-        .filter(Participant.user_id == user_id)
+        .options(*_WITH_CREATOR_AND_CATEGORY)
+        .where(Participant.user_id == user_id)
         .order_by(Event.event_date.desc())
-        .all()
     )
 
-    return events
+    return list(db.session.scalars(statement))
 
 
-def find_public_events(search: str, category_ids: list[int] | None, page: int, per_page: int) -> tuple[list[Event], int]:
-    query = Event.query.filter(Event.event_date >= datetime.now(UTC))
+def find_public_events(
+    search: str,
+    category_ids: list[int] | None,
+    page: int,
+    per_page: int,
+) -> tuple[list[Event], int]:
+    conditions = [Event.event_date >= datetime.now(UTC)]
 
     if search:
-        query = query.filter(
+        conditions.append(
             or_(
                 Event.title.icontains(search, autoescape=True),
                 Event.description.icontains(search, autoescape=True),
-                Event.location.icontains(search, autoescape=True)
+                Event.location.icontains(search, autoescape=True),
             )
         )
 
     if category_ids is not None:
-        query = query.filter(Event.category_id.in_(category_ids))
+        conditions.append(Event.category_id.in_(category_ids))
 
-    total = query.count()
+    total = db.session.scalar(select(func.count()).select_from(Event).where(*conditions)) or 0
 
-    events = (
-        query
-        .options(
-            joinedload(Event.creator),  # pyright: ignore[reportArgumentType]
-            joinedload(Event.category),  # pyright: ignore[reportArgumentType]
-        )
+    statement = (
+        select(Event)
+        .options(*_WITH_CREATOR_AND_CATEGORY)
+        .where(*conditions)
         .order_by(Event.event_date.asc())
         .offset((page - 1) * per_page)
         .limit(per_page)
-        .all()
     )
 
-    return events, total
+    return list(db.session.scalars(statement)), total

@@ -28,10 +28,10 @@ def authenticate(init_data: str, *, platform: str = "", version: str = "") -> Us
 
     if user is None:
         user = User(
-            telegram_id=user_data["id"],  # pyright: ignore[reportCallIssue]
-            first_name=user_data["first_name"],  # pyright: ignore[reportCallIssue]
-            last_name=user_data.get("last_name"),  # pyright: ignore[reportCallIssue]
-            username=user_data.get("username"),  # pyright: ignore[reportCallIssue]
+            telegram_id=user_data["id"],
+            first_name=user_data["first_name"],
+            last_name=user_data.get("last_name"),
+            username=user_data.get("username"),
         )
         db.session.add(user)
 

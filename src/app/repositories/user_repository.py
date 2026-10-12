@@ -5,7 +5,9 @@ from ..models import User
 
 
 def get_user_by_telegram_id(telegram_id: int) -> User | None:
-    return User.query.filter_by(telegram_id=telegram_id).first()
+    statement = select(User).where(User.telegram_id == telegram_id)
+
+    return db.session.scalars(statement).one_or_none()
 
 
 def get_user_by_id(user_id: int) -> User | None:

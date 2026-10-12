@@ -1,15 +1,13 @@
+from sqlalchemy import select
+
 from ..extensions import db
 from ..models import Category
 
 
 def get_all_categories() -> list[Category]:
-    categories = (
-        Category.query
-        .order_by(Category.name.asc())
-        .all()
-    )
+    statement = select(Category).order_by(Category.name.asc())
 
-    return categories
+    return list(db.session.scalars(statement))
 
 
 def category_exists(category_id: int) -> bool:

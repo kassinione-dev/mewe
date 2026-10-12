@@ -52,14 +52,14 @@ def create_event(user_id: int, data: CreateEventRequest) -> Event:
             raise ConflictError(f"you can create a new event in {minutes_left} min")
 
     event = Event(
-        creator_id=user_id,  # pyright: ignore[reportCallIssue]
-        title=data.title,  # pyright: ignore[reportCallIssue]
-        location=data.location,  # pyright: ignore[reportCallIssue]
-        description=data.description,  # pyright: ignore[reportCallIssue]
-        category_id=data.category_id,  # pyright: ignore[reportCallIssue]
-        max_participants=data.max_participants,  # pyright: ignore[reportCallIssue]
-        event_date=data.event_date,  # pyright: ignore[reportCallIssue]
-        duration_minutes=data.duration_minutes,  # pyright: ignore[reportCallIssue]
+        creator_id=user_id,
+        title=data.title,
+        location=data.location,
+        description=data.description,
+        category_id=data.category_id,
+        max_participants=data.max_participants,
+        event_date=data.event_date,
+        duration_minutes=data.duration_minutes,
     )
     user.last_event_create_at = now
 
@@ -141,8 +141,8 @@ def join_event(user_id: int, event_id: int) -> tuple[Participant, int, bool]:
         raise ConflictError("event is full")
 
     participant = Participant(
-        user_id=user_id,  # pyright: ignore[reportCallIssue]
-        event_id=event_id  # pyright: ignore[reportCallIssue]
+        user_id=user_id,
+        event_id=event_id
     )
     db.session.add(participant)
     db.session.flush()
