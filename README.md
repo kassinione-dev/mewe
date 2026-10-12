@@ -21,6 +21,7 @@ MeWe is a Telegram Mini App for discovering and organizing student activities at
 - pytest and GitHub Actions CI
 - Gunicorn WSGI server for the containerized web app
 - Flask-SQLAlchemy and MySQL 8.4
+- Pydantic for request validation
 - Alembic database migrations
 - `python-telegram-bot` for the Telegram bot
 - Vanilla JavaScript and CSS; the frontend has no build step
@@ -40,7 +41,7 @@ MeWe is a Telegram Mini App for discovering and organizing student activities at
     ├── routes/            # Authentication, events, participations, and profile
     ├── services/          # Business rules and Telegram initData verification
     ├── repositories/      # Database queries
-    ├── schemas/           # Request payload validation
+    ├── schemas/           # Pydantic request schemas
     ├── serializers/       # API response serialization
     ├── templates/         # Jinja2 pages
     └── static/            # JavaScript, styles, and icons
