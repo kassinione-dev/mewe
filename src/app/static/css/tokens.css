@@ -7,8 +7,6 @@
   --fefu-blue: #3B63AB;
   --fefu-red: #BC2940;
 
-  --boostrap-success: #28a745;
-
   --bg-page: #F7F9FC;
   --bg-card: #FFFFFF;
   --bg-card-header: #FFFFFF;
@@ -23,10 +21,7 @@
   /* --accent — текст, иконки, обводки; --accent-fill — заливка под белым текстом */
   --accent:  var(--fefu-blue);
   --accent-fill: var(--fefu-blue);
-  --success: var(--boostrap-success);
   --danger:  var(--fefu-red);
-  /* --danger — текст и обводки; --danger-fill — заливка под белым текстом (как пара --accent) */
-  --danger-fill: var(--fefu-red);
 
   --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -48,5 +43,6 @@
 
   /* фирменный синий на тёмном фоне не читается, для текста и иконок осветляем */
   --accent: #8AADEB;
+  /* фирменный красный на тёмном фоне тоже не читается */
   --danger: #EC7F8D;
 }

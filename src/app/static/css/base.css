@@ -63,48 +63,6 @@ html, body {
   }
 }
 
-.toast {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  min-width: 250px;
-  padding: 12px 20px;
-  background-color: var(--text-primary);
-  color: var(--bg-card);
-  border-radius: 8px;
-  text-align: center;
-  font-family: var(--font-main);
-  z-index: 9999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-
-.toast.show {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* На цветной заливке текст белый в обеих темах (по умолчанию он цвета фона карточки) */
-.toast.success,
-.toast.error,
-.toast.info {
-  color: var(--text-on-accent);
-}
-
-.toast.success {
-  background-color: var(--success);
-}
-
-.toast.error {
-  background-color: var(--danger-fill);
-}
-
-.toast.info {
-  background-color: var(--accent-fill);
-}
-
 .visually-hidden {
     position: absolute;
     width: 1px;

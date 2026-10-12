@@ -8,10 +8,10 @@
 from flask import Flask
 
 UI_ICONS = frozenset({
-    "add", "calendar_add_on", "calendar_today", "check", "close", "confirmation_number",
-    "contrast", "dark_mode", "edit", "event", "event_available", "grid_view", "group",
-    "label", "light_mode", "location_on", "lock", "lock_person", "person", "person_add",
-    "schedule", "search", "sell", "shield", "warning",
+    "add", "calendar_add_on", "calendar_today", "check", "check_circle", "close",
+    "confirmation_number", "contrast", "dark_mode", "edit", "error", "event", "event_available",
+    "grid_view", "group", "info", "label", "light_mode", "location_on", "lock", "lock_person",
+    "person", "person_add", "schedule", "search", "sell", "shield", "warning",
 })
 
 # Значения categories.icon в БД
