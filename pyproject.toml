@@ -29,7 +29,10 @@ pythonpath = ["."]
 testpaths = ["tests"]
 
 [tool.pyright]
-include = ["src", "bot.py"]
-typeCheckingMode = "strict"
+include = ["src", "bot.py", "tests"]
+# Код приложения — strict; тестам хватает standard: фикстуры pytest подставляются по имени,
+# и аннотировать каждую — шум
+typeCheckingMode = "standard"
+strict = ["src", "bot.py"]
 venvPath = "."
 venv = ".venv"
