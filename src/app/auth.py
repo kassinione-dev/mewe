@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from functools import wraps
 
 from flask import session
@@ -19,9 +20,9 @@ def get_current_user_id() -> int:
     return user_id
 
 
-def login_required(f):
+def login_required[**P, R](f: Callable[P, R]) -> Callable[P, R]:
     @wraps(f)
-    def decorated(*args, **kwargs):
+    def decorated(*args: P.args, **kwargs: P.kwargs) -> R:
         get_current_user_id()
 
         return f(*args, **kwargs)

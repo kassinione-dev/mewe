@@ -1,8 +1,27 @@
+from typing import TypedDict
+
 from ..icons import category_icon
 from ..models import Event
 
 
-def serialize_event(event: Event, registered_count: int = 0) -> dict:
+class EventResponse(TypedDict):
+    id: int
+    title: str
+    description: str
+    location: str
+    creator_id: int | None
+    creator_name: str | None
+    creator_username: str | None
+    category_id: int | None
+    category_name: str | None
+    category_icon: str | None
+    max_participants: int
+    registered_count: int
+    event_date: str
+    duration_minutes: int
+
+
+def serialize_event(event: Event, registered_count: int = 0) -> EventResponse:
     creator_name = None
     creator_username = None
 

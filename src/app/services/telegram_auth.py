@@ -2,7 +2,7 @@ import hashlib
 import hmac
 import json
 import time
-from typing import NotRequired, TypedDict
+from typing import NotRequired, TypedDict, cast
 from urllib.parse import parse_qsl, urlsplit
 
 from ..exceptions import InvalidInitDataError
@@ -24,7 +24,7 @@ def validate_init_data(init_data: str, bot_token: str) -> TelegramUserData:
 
     received_hash = data.pop("hash", "")
 
-    def reject(reason: str, message: str | None = None, **details) -> InvalidInitDataError:
+    def reject(reason: str, message: str | None = None, **details: object) -> InvalidInitDataError:
         return InvalidInitDataError(reason, message, keys=sorted(data), **details)
 
     if not received_hash:
@@ -61,6 +61,9 @@ def validate_init_data(init_data: str, bot_token: str) -> TelegramUserData:
 
     if not isinstance(user_data, dict):
         raise reject("user_not_object", "invalid Telegram user data")
+
+    # У JSON-объекта ключи всегда строки, а значения проверяем ниже по одному
+    user_data = cast(dict[str, object], user_data)
 
     user_id = user_data.get("id")
     first_name = user_data.get("first_name")

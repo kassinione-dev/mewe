@@ -20,7 +20,7 @@ class UnauthorizedError(AppError):
 class InvalidInitDataError(UnauthorizedError):
     message = "invalid initData"
 
-    def __init__(self, reason: str, message: str | None = None, **details):
+    def __init__(self, reason: str, message: str | None = None, **details: object):
         super().__init__(message)
         self.reason = reason
         self.details = details

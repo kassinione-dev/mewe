@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from typing import cast
 
 from flask import current_app
 
@@ -10,7 +11,8 @@ from .telegram_auth import validate_init_data
 
 
 def authenticate(init_data: str, *, platform: str = "", version: str = "") -> User:
-    bot_token = current_app.config["BOT_TOKEN"]
+    # Flask не типизирует значения конфига; create_app() кладёт сюда непустую строку
+    bot_token = cast(str, current_app.config["BOT_TOKEN"])
 
     try:
         user_data = validate_init_data(init_data, bot_token)

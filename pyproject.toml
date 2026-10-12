@@ -30,5 +30,6 @@ testpaths = ["tests"]
 
 [tool.pyright]
 include = ["src", "bot.py"]
+typeCheckingMode = "strict"
 venvPath = "."
 venv = ".venv"
