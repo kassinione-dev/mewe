@@ -4,7 +4,7 @@ from typing import Any
 from ..exceptions import ConflictError, ForbiddenError, NotFoundError, ValidationError
 from ..extensions import db
 from ..models import Category, Event, Participant
-from ..repositories.category_repository import get_all_categories
+from ..repositories.category_repository import category_exists, get_all_categories
 from ..repositories.event_repository import (
     find_public_events,
     get_event_by_id,
@@ -44,6 +44,9 @@ def create_event(user_id: int, payload: dict[str, Any]) -> Event:
 
 
     data = validate_create_event_payload(payload)
+
+    if not category_exists(data["category_id"]):
+        raise ValidationError("category not found")
 
     event = Event(
         creator_id=user_id,  # pyright: ignore[reportCallIssue]
