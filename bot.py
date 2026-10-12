@@ -18,11 +18,16 @@ from telegram.ext import (
 
 load_dotenv()
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-WEBAPP_URL = os.getenv("WEBAPP_URL")
 
-if not BOT_TOKEN or not WEBAPP_URL:
-    raise RuntimeError("Missing BOT_TOKEN or WEBAPP_URL in env file")
+def _require_env(name: str) -> str:
+    value = os.getenv(name, "").strip()
+    if not value:
+        raise RuntimeError(f"{name} is not configured")
+    return value
+
+
+BOT_TOKEN = _require_env("BOT_TOKEN")
+WEBAPP_URL = _require_env("WEBAPP_URL")
 
 
 # /start
@@ -30,7 +35,7 @@ async def start_command(update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [[
         InlineKeyboardButton(
             text="Открыть",
-            web_app=WebAppInfo(url=WEBAPP_URL)  # pyright: ignore[reportArgumentType]
+            web_app=WebAppInfo(url=WEBAPP_URL)
         )
     ]]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -44,7 +49,7 @@ async def start_command(update, context: ContextTypes.DEFAULT_TYPE):
 async def set_menu(app: Application):
     webapp_button = MenuButtonWebApp(
         text="Открыть",
-        web_app=WebAppInfo(url=WEBAPP_URL)  # pyright: ignore[reportArgumentType]
+        web_app=WebAppInfo(url=WEBAPP_URL)
     )
     await app.bot.set_chat_menu_button(menu_button=webapp_button)
 
@@ -57,7 +62,7 @@ async def fallback_hint(update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     app = (
         ApplicationBuilder()
-        .token(BOT_TOKEN)  # pyright: ignore[reportArgumentType]
+        .token(BOT_TOKEN)
         .post_init(set_menu)
         .build()
     )
