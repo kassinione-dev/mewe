@@ -17,6 +17,16 @@ jobs:
           version: ${{ env.UV_VERSION }}
       - run: uvx ruff check src tests
 
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+      - run: uv sync --frozen
+      - run: uv run pyright
+
   test:
     runs-on: ubuntu-latest
     services:
