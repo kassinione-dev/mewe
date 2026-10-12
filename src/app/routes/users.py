@@ -1,7 +1,8 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify
 
+from ..api import parse_json_body
 from ..auth import get_current_user_id, login_required
-from ..exceptions import ValidationError
+from ..schemas.user_schema import UpdateProfileRequest
 from ..serializers.event_serializer import serialize_event
 from ..services import event_service, profile_service
 
@@ -39,13 +40,8 @@ def list_my_participations():
 @users_bp.route("/me", methods=["PATCH"])
 @login_required
 def update_about():
-    payload = request.get_json(silent=True)
-    user_id = get_current_user_id()
-
-    if not isinstance(payload, dict):
-        raise ValidationError("invalid JSON body")
-
-    about = profile_service.update_about(user_id, payload)
+    data = parse_json_body(UpdateProfileRequest)
+    about = profile_service.update_about(get_current_user_id(), data.about)
     data = {
         "about": about
     }

@@ -1,6 +1,5 @@
 import math
 from datetime import UTC, datetime, timedelta
-from typing import Any
 
 from ..exceptions import ConflictError, ForbiddenError, NotFoundError, ValidationError
 from ..extensions import db
@@ -20,7 +19,7 @@ from ..repositories.participant_repository import (
     is_user_registered,
 )
 from ..repositories.user_repository import get_user_for_update
-from ..schemas.event_schema import validate_create_event_payload
+from ..schemas.event_schema import CreateEventRequest
 from .pagination import Page
 
 EVENT_CREATE_COOLDOWN_MINUTES = 5
@@ -28,13 +27,20 @@ EVENTS_PER_PAGE_DEFAULT = 15
 EVENTS_PER_PAGE_MAX = 100
 
 
-def create_event(user_id: int, payload: dict[str, Any]) -> Event:
+def create_event(user_id: int, data: CreateEventRequest) -> Event:
     user = get_user_for_update(user_id)
 
     if user is None:
         raise NotFoundError("user not found")
 
     now = datetime.now(UTC)
+
+    # Формат полей уже проверила схема; здесь — правила, которым нужны время и БД
+    if data.event_date <= now:
+        raise ValidationError("event_date must be in the future")
+
+    if not category_exists(data.category_id):
+        raise ValidationError("category not found")
 
     if user.last_event_create_at:
         next_allowed_at = user.last_event_create_at + timedelta(minutes=EVENT_CREATE_COOLDOWN_MINUTES)
@@ -45,20 +51,15 @@ def create_event(user_id: int, payload: dict[str, Any]) -> Event:
             minutes_left = max(1, math.ceil(seconds_left / 60))
             raise ConflictError(f"you can create a new event in {minutes_left} min")
 
-    data = validate_create_event_payload(payload)
-
-    if not category_exists(data["category_id"]):
-        raise ValidationError("category not found")
-
     event = Event(
         creator_id=user_id,  # pyright: ignore[reportCallIssue]
-        title=data["title"],  # pyright: ignore[reportCallIssue]
-        location=data["location"],  # pyright: ignore[reportCallIssue]
-        description=data["description"],  # pyright: ignore[reportCallIssue]
-        category_id=data["category_id"],  # pyright: ignore[reportCallIssue]
-        max_participants=data["max_participants"],  # pyright: ignore[reportCallIssue]
-        event_date=data["event_date"],  # pyright: ignore[reportCallIssue]
-        duration_minutes=data["duration_minutes"],  # pyright: ignore[reportCallIssue]
+        title=data.title,  # pyright: ignore[reportCallIssue]
+        location=data.location,  # pyright: ignore[reportCallIssue]
+        description=data.description,  # pyright: ignore[reportCallIssue]
+        category_id=data.category_id,  # pyright: ignore[reportCallIssue]
+        max_participants=data.max_participants,  # pyright: ignore[reportCallIssue]
+        event_date=data.event_date,  # pyright: ignore[reportCallIssue]
+        duration_minutes=data.duration_minutes,  # pyright: ignore[reportCallIssue]
     )
     user.last_event_create_at = now
 

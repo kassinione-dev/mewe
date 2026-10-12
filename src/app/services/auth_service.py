@@ -1,20 +1,16 @@
 from datetime import UTC, datetime
-from typing import Any
 
 from flask import current_app
 
-from ..exceptions import InvalidInitDataError, ValidationError
+from ..exceptions import InvalidInitDataError
 from ..extensions import db
 from ..models import User
 from ..repositories.user_repository import get_user_by_telegram_id
 from .telegram_auth import validate_init_data
 
 
-def authenticate(payload: dict[str, Any]) -> User:
+def authenticate(init_data: str, *, platform: str = "", version: str = "") -> User:
     bot_token = current_app.config["BOT_TOKEN"]
-    init_data = payload.get("initData")
-    if not isinstance(init_data, str):
-        raise ValidationError("initData is required")
 
     try:
         user_data = validate_init_data(init_data, bot_token)
@@ -23,8 +19,8 @@ def authenticate(payload: dict[str, Any]) -> User:
             "initData rejected: reason=%s length=%d platform=%r version=%r details=%s",
             error.reason,
             len(init_data),
-            str(payload.get("platform", ""))[:32],
-            str(payload.get("version", ""))[:16],
+            platform[:32],
+            version[:16],
             error.details,
         )
         raise

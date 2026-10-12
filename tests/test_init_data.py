@@ -1,25 +1,14 @@
-import hashlib
-import hmac
 import json
 import time
-from urllib.parse import urlencode
 
 import pytest
 
 from src.app.exceptions import InvalidInitDataError
 from src.app.services.telegram_auth import validate_init_data
+from tests.telegram import TEST_BOT_TOKEN as BOT_TOKEN
+from tests.telegram import make_init_data
 
-BOT_TOKEN = "123456:test-token"
 USER = {"id": 42, "first_name": "Лев", "username": "lev"}
-
-
-def make_init_data(bot_token: str, **fields: str) -> str:
-    """Подписывает поля так же, как Telegram: HMAC-SHA256 от data-check-string."""
-    data_check_string = "\n".join(f"{key}={fields[key]}" for key in sorted(fields))
-    secret_key = hmac.new(b"WebAppData", bot_token.encode(), hashlib.sha256).digest()
-    signature = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
-
-    return urlencode({**fields, "hash": signature})
 
 
 def _now() -> str:

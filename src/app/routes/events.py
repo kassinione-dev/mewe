@@ -1,7 +1,9 @@
 from flask import Blueprint, jsonify, request
 
+from ..api import parse_json_body
 from ..auth import get_current_user_id, login_required
 from ..exceptions import ValidationError
+from ..schemas.event_schema import CreateEventRequest
 from ..serializers.event_serializer import serialize_event
 from ..serializers.participant_serializer import serialize_participant
 from ..services import event_service
@@ -44,12 +46,8 @@ def list_events():
 @events_bp.route("", methods=["POST"])
 @login_required
 def create_event():
-    payload = request.get_json(silent=True)
-
-    if not isinstance(payload, dict):
-        raise ValidationError("invalid JSON body")
-
-    event = event_service.create_event(get_current_user_id(), payload)
+    data = parse_json_body(CreateEventRequest)
+    event = event_service.create_event(get_current_user_id(), data)
     data = serialize_event(event)
 
     return jsonify(data), 201

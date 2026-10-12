@@ -7,6 +7,8 @@ from urllib.parse import urlsplit
 import pytest
 import sqlalchemy as sa
 
+from tests.telegram import TEST_BOT_TOKEN
+
 # Окружение задаём до импорта приложения: load_dotenv() в src/app не перезаписывает
 # уже заданные переменные, поэтому .env с настоящей БД тестам не достанется.
 TEST_DATABASE_URL = os.environ.get(
@@ -20,7 +22,7 @@ if not urlsplit(TEST_DATABASE_URL).path.endswith("_test"):
 
 os.environ.update(
     DATABASE_URL=TEST_DATABASE_URL,
-    BOT_TOKEN="123456:test-token",
+    BOT_TOKEN=TEST_BOT_TOKEN,
     APP_ORIGIN=APP_ORIGIN,
     SECRET_KEY="test-secret",
 )
