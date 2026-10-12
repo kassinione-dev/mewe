@@ -128,7 +128,12 @@ export function createEventDetail(root, {
       return;
     }
 
-    if (!upcoming && !status.is_registered) return;
+    if (!upcoming) {
+      if (status.is_registered) {
+        actions.replaceChildren(h('p', { className: 'event-detail-notice', text: 'Вы были записаны' }));
+      }
+      return;
+    }
 
     if (status.is_registered) {
       showActionButton('Отменить запись', 'secondary', changeParticipation);
