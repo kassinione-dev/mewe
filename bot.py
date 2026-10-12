@@ -1,10 +1,12 @@
 import os
+from typing import Any
 
 from dotenv import load_dotenv
 from telegram import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     MenuButtonWebApp,
+    Update,
     WebAppInfo,
 )
 from telegram.ext import (
@@ -12,6 +14,8 @@ from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     ContextTypes,
+    ExtBot,
+    JobQueue,
     MessageHandler,
     filters,
 )
@@ -30,8 +34,24 @@ BOT_TOKEN = _require_env("BOT_TOKEN")
 WEBAPP_URL = _require_env("WEBAPP_URL")
 
 
+# Тип приложения, которое собирает ApplicationBuilder() без своих настроек
+type BotApplication = Application[
+    ExtBot[None],
+    ContextTypes.DEFAULT_TYPE,
+    dict[Any, Any],
+    dict[Any, Any],
+    dict[Any, Any],
+    JobQueue[ContextTypes.DEFAULT_TYPE],
+]
+
+
 # /start
-async def start_command(update, context: ContextTypes.DEFAULT_TYPE):
+async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    # effective_message: у отредактированного сообщения update.message — None
+    message = update.effective_message
+    if message is None:
+        return
+
     keyboard = [[
         InlineKeyboardButton(
             text="Открыть",
@@ -39,14 +59,14 @@ async def start_command(update, context: ContextTypes.DEFAULT_TYPE):
         )
     ]]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text(
+    await message.reply_text(
         "Добро пожаловать в MeWe! 🎉",
         reply_markup=reply_markup
     )
 
 
 # menu button
-async def set_menu(app: Application):
+async def set_menu(app: BotApplication) -> None:
     webapp_button = MenuButtonWebApp(
         text="Открыть",
         web_app=WebAppInfo(url=WEBAPP_URL)
@@ -55,21 +75,27 @@ async def set_menu(app: Application):
 
 
 # hint
-async def fallback_hint(update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Открой MeWe командой /start 😊")
+async def fallback_hint(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    message = update.effective_message
+    if message is None:
+        return
+
+    await message.reply_text("Открой MeWe командой /start 😊")
 
 
-def main():
+def main() -> None:
     app = (
         ApplicationBuilder()
         .token(BOT_TOKEN)
-        .post_init(set_menu)
+        # В типах python-telegram-bot параметр post_init — Application[Unknown, ...]
+        .post_init(set_menu)  # pyright: ignore[reportUnknownMemberType]
         .build()
     )
 
     app.add_handler(CommandHandler("start", start_command))
     app.add_handler(MessageHandler(~filters.COMMAND, fallback_hint))
     app.run_polling()
-    
+
+
 if __name__ == '__main__':
     main()
