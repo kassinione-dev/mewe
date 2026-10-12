@@ -6,6 +6,7 @@ from urllib.parse import urlsplit
 
 import pytest
 import sqlalchemy as sa
+from sqlalchemy.exc import OperationalError
 
 from tests.telegram import TEST_BOT_TOKEN
 
@@ -46,7 +47,7 @@ def _wait_for_db(url: str) -> None:
             try:
                 with engine.connect():
                     return
-            except sa.exc.OperationalError:
+            except OperationalError:
                 if time.monotonic() > deadline:
                     raise
                 time.sleep(1)
