@@ -88,8 +88,18 @@ def test_leave_event(client, organizer, student, make_event, query):
 
     response = client.delete(participant_url(event_id))
 
-    assert response.status_code == 204
+    assert response.status_code == 200
+    assert response.json == {"registered_count": 0}
     assert query(count_participants(event_id)) == 0
+
+
+def test_leave_without_registration_is_idempotent(client, organizer, student, make_event):
+    event_id = make_event(organizer)
+
+    response = client.delete(participant_url(event_id))
+
+    assert response.status_code == 200
+    assert response.json == {"registered_count": 0}
 
 
 def test_cannot_leave_started_event(

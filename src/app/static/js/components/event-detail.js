@@ -172,7 +172,7 @@ export function createEventDetail(root, {
     try {
       if (wasRegistered) {
         const result = await leaveEvent(event.id);
-        updateRegisteredCount(event, result?.registered_count ?? Math.max((event.registered_count || 0) - 1, 0));
+        updateRegisteredCount(event, result.registered_count);
         showToast('Запись отменена', 'success');
       } else {
         const result = await joinEvent(event.id);

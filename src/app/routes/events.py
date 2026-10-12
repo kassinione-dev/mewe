@@ -68,7 +68,7 @@ def create_event():
 def delete_my_event(event_id: int):
     delete_event(get_current_user_id(), event_id)
 
-    return jsonify(), 204
+    return "", 204
 
 
 @events_bp.route("/api/events/<int:event_id>/participants/me", methods=["GET"])
@@ -103,9 +103,9 @@ def join_event(event_id: int):
 @login_required
 def leave_event(event_id: int):
     user_id = get_current_user_id()
-    registered_count, deleted = leave_event_service(user_id, event_id)
+    registered_count = leave_event_service(user_id, event_id)
     data = {
         "registered_count": registered_count
     }
 
-    return jsonify(data), 204 if deleted else 200
+    return jsonify(data), 200

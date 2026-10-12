@@ -100,6 +100,7 @@ def test_delete_own_event(client, user, make_event, query):
     response = client.delete(f"{EVENTS_URL}/{event_id}")
 
     assert response.status_code == 204
+    assert response.data == b""
     assert query(count_events()) == 0
 
 

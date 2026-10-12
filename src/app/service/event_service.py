@@ -150,7 +150,7 @@ def join_event(user_id: int, event_id: int) -> tuple[Participant, int, bool]:
     return participant, registered_count, True
 
 
-def leave_event(user_id: int, event_id: int) -> tuple[int, bool]:
+def leave_event(user_id: int, event_id: int) -> int:
     event = get_event_for_update(event_id)
 
     if event is None:
@@ -162,7 +162,7 @@ def leave_event(user_id: int, event_id: int) -> tuple[int, bool]:
     participant = get_participant(user_id, event_id)
 
     if participant is None:
-        return get_registered_count(event_id), False
+        return get_registered_count(event_id)
 
     db.session.delete(participant)
     db.session.flush()
@@ -170,7 +170,7 @@ def leave_event(user_id: int, event_id: int) -> tuple[int, bool]:
     registered_count = get_registered_count(event_id)
     db.session.commit()
 
-    return registered_count, True
+    return registered_count
 
 
 def delete_event(user_id: int, event_id: int) -> None:
