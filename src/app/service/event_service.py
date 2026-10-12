@@ -153,6 +153,9 @@ def leave_event(user_id: int, event_id: int) -> tuple[int, bool]:
     if event is None:
         raise NotFoundError("event not found")
 
+    if event.event_date <= datetime.now(UTC):
+        raise ConflictError("event has already started")
+
     participant = get_participant(user_id, event_id)
 
     if participant is None:
