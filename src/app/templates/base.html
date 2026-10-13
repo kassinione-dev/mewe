@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{% block title %}MeWe{% endblock %}</title>
+    {# Палитра — до theme.js: скрипт ждёт загрузки стилей выше него и сразу красит шапку Telegram #}
+    <link href="{{ url_for('static', filename='css/tokens.css') }}" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     {# Классические скрипты: выполняются сразу, до отрисовки страницы #}
     <script src="{{ url_for('static', filename='js/boot/telegram-init.js') }}"></script>
@@ -11,7 +13,6 @@
     {# Вход запускается на каждой странице, даже без своего модуля (например, страница ошибки) #}
     <script type="module" src="{{ url_for('static', filename='js/core/auth.js') }}"></script>
 
-    <link href="{{ url_for('static', filename='css/tokens.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/components/modal.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/components/event-card.css') }}" rel="stylesheet">

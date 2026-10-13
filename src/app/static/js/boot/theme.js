@@ -53,7 +53,9 @@
     var styles = window.getComputedStyle(document.documentElement);
     var page = styles.getPropertyValue('--bg-page').trim();
     var card = styles.getPropertyValue('--bg-card').trim();
-    if (!page) return; // стили ещё не загружены — повторим по событию load
+    // tokens.css подключён в base.html выше этого скрипта, поэтому переменные уже есть;
+    // пусто — только если стили не загрузились
+    if (!page) return;
 
     if (supports('6.1')) {
       tg.setHeaderColor(page);
@@ -93,7 +95,6 @@
   };
 
   apply();
-  window.addEventListener('load', syncTelegramColors);
 
   // В режиме «Авто» следуем за сменой темы в Telegram (или в системе вне Telegram)
   if (tg) {
