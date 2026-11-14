@@ -1,8 +1,9 @@
 # CI/CD в GitLab. Заменяет .github/workflows: те же проверки, деплой по пушу в main
 # после зелёного пайплайна.
 #
-# Переменные CI/CD (Settings → CI/CD → Variables), защищённые и masked, только для main:
+# Переменные CI/CD (Settings → CI/CD → Variables), только для main:
 #   SSH_HOST, SSH_USER, SSH_PRIVATE_KEY (тип File), SSH_PORT
+# Ключ многострочный, поэтому Visible, а не Masked; в логи он не попадает — джоба его не печатает.
 # Репозиторий на сервере должен смотреть на GitLab: git fetch origin main в деплое берёт оттуда.
 
 stages:
