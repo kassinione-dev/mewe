@@ -1,0 +1,145 @@
+# CI/CD в GitLab. Заменяет .github/workflows: те же проверки, деплой по пушу в main
+# после зелёного пайплайна.
+#
+# Переменные CI/CD (Settings → CI/CD → Variables), защищённые и masked, только для main:
+#   SSH_HOST, SSH_USER, SSH_PRIVATE_KEY (тип File), SSH_PORT
+# Репозиторий на сервере должен смотреть на GitLab: git fetch origin main в деплое берёт оттуда.
+
+stages:
+  - lint
+  - typecheck
+  - test
+  - deploy
+
+variables:
+  UV_VERSION: "0.11.19"
+  UV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/uv"
+
+default:
+  image: "ghcr.io/astral-sh/uv:${UV_VERSION}-python3.12-trixie-slim"
+  interruptible: true
+  cache:
+    # Кэш привязан к uv.lock: меняются зависимости — окружение пересобирается
+    key:
+      files:
+        - uv.lock
+    paths:
+      - .venv
+      - .cache/uv
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "api"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+lint:
+  stage: lint
+  script:
+    - uvx ruff check src tests
+
+typecheck:
+  stage: typecheck
+  script:
+    - uv sync --frozen
+    - uv run pyright
+
+test:
+  stage: test
+  services:
+    - name: mysql:8.4.11
+      alias: mysql
+  variables:
+    MYSQL_ROOT_PASSWORD: test
+    MYSQL_ROOT_HOST: "%"
+    MYSQL_DATABASE: mewe_test
+    DATABASE_URL: mysql+pymysql://root:test@mysql:3306/mewe_test
+    TEST_DATABASE_URL: mysql+pymysql://root:test@mysql:3306/mewe_test
+  script:
+    - uv sync --frozen
+
+    # У сервисов GitLab нет healthcheck, как у services в GitHub Actions, поэтому ждём MySQL сами
+    - |
+      uv run python - <<'PY'
+      import sys
+      import time
+
+      import pymysql
+
+      deadline = time.monotonic() + 120
+      while True:
+          try:
+              pymysql.connect(
+                  host="mysql", port=3306, user="root", password="test", connect_timeout=3
+              ).close()
+              break
+          except pymysql.err.OperationalError as exc:
+              if time.monotonic() > deadline:
+                  sys.exit(f"MySQL не поднялась за 120 секунд: {exc}")
+              time.sleep(2)
+      PY
+
+    # Одна голова миграций
+    - test "$(uv run alembic heads | wc -l)" -eq 1
+
+    # upgrade → downgrade base → upgrade: миграции обратимы
+    - uv run alembic upgrade head
+    - uv run alembic downgrade base
+    - uv run alembic upgrade head
+
+    # Модели не разошлись с миграциями
+    - uv run alembic check
+
+    - uv run pytest -v
+
+deploy:
+  stage: deploy
+  image: alpine:3.22
+  interruptible: false
+  cache: []
+  resource_group: deploy
+  # Код на сервере выкатываем сами, джобе checkout не нужен (и git в alpine нет)
+  variables:
+    GIT_STRATEGY: none
+    # Значение по умолчанию; переменная проекта с тем же именем его перекрывает
+    SSH_PORT: "22"
+  needs: [lint, typecheck, test]
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  before_script:
+    - apk add --no-cache openssh-client
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    # Ключ удобнее хранить переменной типа File; строку тоже принимаем
+    - |
+      if [ -f "$SSH_PRIVATE_KEY" ]; then
+        cp "$SSH_PRIVATE_KEY" ~/.ssh/id_deploy
+      else
+        printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_deploy
+      fi
+      chmod 600 ~/.ssh/id_deploy
+    # Хост-ключ не сверяем с отдельным секретом: доверяем хосту при первом подключении,
+    # как это делал appleboy/ssh-action в прежнем конфиге
+    - ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+  script:
+    # Кавычки в <<'SCRIPT' не дают развернуть переменные локально: SHA передаём аргументом
+    - |
+      ssh -i ~/.ssh/id_deploy -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" bash -s -- "$CI_COMMIT_SHA" <<'SCRIPT'
+      set -eo pipefail
+      sha="$1"
+
+      cd ~/mewe
+      git fetch origin main
+      # Выкатываем коммит, прошедший CI, даже если в main уже успели запушить следующий
+      git reset --hard "$sha"
+      docker compose build
+
+      mkdir -p ~/mewe-backups
+      docker compose exec -T db sh -c 'mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" --single-transaction mewe_app' \
+        | gzip > ~/mewe-backups/mewe_app-$(date +%Y%m%d-%H%M%S).sql.gz
+      ls -1t ~/mewe-backups/*.sql.gz | tail -n +11 | xargs -r rm --
+
+      docker compose run --rm web alembic upgrade head
+      docker compose up -d
+      SCRIPT

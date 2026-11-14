@@ -22,7 +22,7 @@ MeWe is a Telegram Mini App for discovering and organizing student activities at
 - **Bot:** `python-telegram-bot`
 - **Frontend:** Jinja2 templates, vanilla JavaScript ES modules, and CSS; no build step
 - **Quality:** pytest on a real MySQL database, pyright in strict mode, ruff
-- **Infrastructure:** Docker Compose, GitHub Actions CI/CD, `uv` for dependency management
+- **Infrastructure:** Docker Compose, GitLab CI/CD, `uv` for dependency management
 
 ## Architecture
 
@@ -51,7 +51,7 @@ models.py      SQLAlchemy 2.0 models with Mapped[...] types
 ├── bot.py                 # Telegram /start command and Mini App menu button
 ├── run.py                 # Flask web server entry point
 ├── docker-compose.yml     # web, bot, and MySQL services
-├── .github/workflows/     # CI checks and deployment
+├── .gitlab-ci.yml         # CI checks and deployment
 ├── migrations/            # Alembic migrations
 ├── tests/                 # pytest suite (needs a MySQL test database)
 └── src/app/
@@ -193,13 +193,15 @@ uv run pytest
 
 ## CI/CD
 
-GitHub Actions runs three jobs on every pull request and push to `main`:
+GitLab CI runs three jobs on every merge request and push to `main`:
 
 - **lint:** `ruff`
 - **typecheck:** `pyright`
 - **test:** on a temporary MySQL service container, checks that migrations have a single head, runs `upgrade` → `downgrade base` → `upgrade`, runs `alembic check` to catch model changes without a migration, and then runs the pytest suite
 
 A push to `main` deploys to the server only after CI passes, and the deploy checks out the exact commit that passed. It backs up the database with `mysqldump` (the last 10 dumps are kept) before applying migrations. Docker image versions are pinned, so CI and the server run the same MySQL.
+
+The deploy job needs `SSH_HOST`, `SSH_USER`, `SSH_PORT` and `SSH_PRIVATE_KEY` (of the File type) in the project's CI/CD variables, protected so they are only exposed to `main`. The server's `origin` must point to the GitLab repository.
 
 ## Database migrations
 

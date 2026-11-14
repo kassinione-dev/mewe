@@ -1,6 +1,7 @@
 .git
 .venv
 .env
+.gitlab-ci.yml
 
 __pycache__/
 *.pyc
